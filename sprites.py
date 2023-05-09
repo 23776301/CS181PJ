@@ -21,12 +21,16 @@ class BaseSprite(pygame.sprite.Sprite):
         # 根据方向移动
         if self.direction == Settings.LEFT:
             self.rect.x -= self.speed
+            #self.rect.x -= 5
         elif self.direction == Settings.RIGHT:
             self.rect.x += self.speed
+            #self.rect.x += 5
         elif self.direction == Settings.UP:
             self.rect.y -= self.speed
+            #self.rect.y -= 5
         elif self.direction == Settings.DOWN:
             self.rect.y += self.speed
+            #self.rect.y += 5
 
 
 class Bullet(BaseSprite):
@@ -132,6 +136,7 @@ class Hero(TankSprite):
         self.speed = Settings.HERO_SPEED
         self.direction = Settings.UP
         self.is_hit_wall = False
+        self.life = 10
 
         # 初始化英雄的位置
         self.rect.centerx = Settings.SCREEN_RECT.centerx - Settings.BOX_RECT.width * 2
@@ -151,11 +156,19 @@ class Hero(TankSprite):
         if not self.is_hit_wall:
             super().update()
             self.__turn()
-
+    '''
     def kill(self):
         self.is_alive = False
         self.boom()
+    '''
 
+    def kill(self):
+        self.life -= 1
+        if not self.life:
+            self.is_alive = False
+            self.boom()
+            #t = Thread(target=self.boom)
+            #t.start()
 
 class Enemy(TankSprite):
 
@@ -166,6 +179,7 @@ class Enemy(TankSprite):
         self.speed = Settings.ENEMY_SPEED
         self.direction = random.randint(0, 3)
         self.terminal = float(random.randint(40*2, 40*8))
+        self.life = 1
 
     def random_turn(self):
         # 随机转向
@@ -206,6 +220,12 @@ class Enemy(TankSprite):
             super().update()
             # 碰墙掉头
             self.terminal -= self.speed
+
+    def kill(self):
+        self.life -= 1
+        if not self.life:
+            t = Thread(target=self.boom)
+            t.start()
 
 
 class Wall(BaseSprite):

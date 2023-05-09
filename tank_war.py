@@ -1,3 +1,5 @@
+import tkinter.font
+
 import pygame
 from sprites import *
 
@@ -28,6 +30,7 @@ class TankWar:
         self.enemies = pygame.sprite.Group()
         self.enemy_bullets = pygame.sprite.Group()
         self.walls = pygame.sprite.Group()
+        self.enemy_count = Settings.ENEMY_COUNT
         for i in range(Settings.ENEMY_COUNT):
             direction = random.randint(0, 3)
             enemy = Enemy(Settings.ENEMY_IMAGES[direction], self.screen)
@@ -53,13 +56,14 @@ class TankWar:
                     wall.type = Settings.IRON_WALL
                 elif Settings.MAP_ONE[y][x] == Settings.WEED_WALL:
                     wall.type = Settings.WEED_WALL
-                elif Settings.MAP_ONE[y][x] == Settings.BOSS_WALL:
-                    wall.type = Settings.BOSS_WALL
-                    wall.life = 1
+                #elif Settings.MAP_ONE[y][x] == Settings.BOSS_WALL:
+                #    wall.type = Settings.BOSS_WALL
+                #    wall.life = 1
                 self.walls.add(wall)
 
     def __check_keydown(self, event):
         """检查按下按钮的事件"""
+        self.hero.shot()
         if event.key == pygame.K_LEFT:
             # 按下左键
             self.hero.direction = Settings.LEFT
@@ -80,9 +84,9 @@ class TankWar:
             self.hero.direction = Settings.DOWN
             self.hero.is_moving = True
             self.hero.is_hit_wall = False
-        elif event.key == pygame.K_SPACE:
+        #elif event.key == pygame.K_SPACE:
             # 坦克发子弹
-            self.hero.shot()
+        #    self.hero.shot()
 
     def __check_keyup(self, event):
         """检查松开按钮的事件"""
@@ -127,8 +131,8 @@ class TankWar:
                     if wall.type == Settings.RED_WALL:
                         wall.kill()
                         bullet.kill()
-                    elif wall.type == Settings.BOSS_WALL:
-                        self.game_still = False
+                    #elif wall.type == Settings.BOSS_WALL:
+                    #    self.game_still = False
                     elif wall.type == Settings.IRON_WALL:
                         bullet.kill()
             # 敌方英雄子弹击中墙
@@ -138,15 +142,15 @@ class TankWar:
                         if wall.type == Settings.RED_WALL:
                             wall.kill()
                             bullet.kill()
-                        elif wall.type == Settings.BOSS_WALL:
-                            self.game_still = False
+                        #elif wall.type == Settings.BOSS_WALL:
+                        #    self.game_still = False
                         elif wall.type == Settings.IRON_WALL:
                             bullet.kill()
 
             # 我方坦克撞墙
             if pygame.sprite.collide_rect(self.hero, wall):
                 # 不可穿越墙
-                if wall.type == Settings.RED_WALL or wall.type == Settings.IRON_WALL or wall.type == Settings.BOSS_WALL:
+                if wall.type == Settings.RED_WALL or wall.type == Settings.IRON_WALL:#or wall.type == Settings.BOSS_WALL:
                     self.hero.is_hit_wall = True
                     # 移出墙内
                     self.hero.move_out_wall(wall)
@@ -154,12 +158,13 @@ class TankWar:
             # 敌方坦克撞墙
             for enemy in self.enemies:
                 if pygame.sprite.collide_rect(wall, enemy):
-                    if wall.type == Settings.RED_WALL or wall.type == Settings.IRON_WALL or wall.type == Settings.BOSS_WALL:
+                    if wall.type == Settings.RED_WALL or wall.type == Settings.IRON_WALL:# or wall.type == Settings.BOSS_WALL:
                         enemy.move_out_wall(wall)
                         enemy.random_turn()
 
         # 子弹击中、敌方坦克碰撞、敌我坦克碰撞
         pygame.sprite.groupcollide(self.hero.bullets, self.enemies, True, True)
+
         # 敌方子弹击中我方
         for enemy in self.enemies:
             for bullet in enemy.bullets:
@@ -184,6 +189,7 @@ class TankWar:
     def run_game(self):
         self.__init_game()
         self.__create_sprite()
+        start_time = time.time()
         while True and self.hero.is_alive and self.game_still:
             self.screen.fill(Settings.SCREEN_COLOR)
             # 1、设置刷新帧率
@@ -195,6 +201,24 @@ class TankWar:
             # 4、更新/绘制精灵/经理组
             self.__update_sprites()
             # 5、更新显示
+            score = Settings.ENEMY_COUNT - len(self.enemies)
+            font = pygame.font.SysFont('宋体', 20, True)
+            score_surface1 = font.render("Kill count:" + str(score), True, (255, 255, 255))
+            score_surface2 = font.render("Hp:" + str(self.hero.life), True, (255, 255, 255))
+            score_rect1 = score_surface1.get_rect()
+            score_rect2 = score_surface1.get_rect()
+            score_rect1.right = 19*Settings.BOX_SIZE - 10
+            score_rect2.right = 19 * Settings.BOX_SIZE - 10
+            score_rect1.top = 10
+            score_rect2.top = 30
+            self.screen.blit(score_surface1, score_rect1)
+            self.screen.blit(score_surface2, score_rect2)
+            if time.time() - start_time > Settings.TIME_LIMIT or len(self.enemies) == 0:
+
+                print("击杀数：{}".format(score))
+                print("剩余血量：{}".format(self.hero.life))
+                pygame.quit()
+                break
             pygame.display.update()
         self.__game_over()
 
