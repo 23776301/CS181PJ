@@ -63,7 +63,7 @@ class TankWar:
 
     def __check_keydown(self, event):
         """检查按下按钮的事件"""
-        self.hero.shot()
+        # self.hero.shot()
         if event.key == pygame.K_LEFT:
             # 按下左键
             self.hero.direction = Settings.LEFT
@@ -88,24 +88,24 @@ class TankWar:
             # 坦克发子弹
         #    self.hero.shot()
 
-    def __check_keyup(self, event):
-        """检查松开按钮的事件"""
-        if event.key == pygame.K_LEFT:
-            # 松开左键
-            self.hero.direction = Settings.LEFT
-            self.hero.is_moving = False
-        elif event.key == pygame.K_RIGHT:
-            # 松开右键
-            self.hero.direction = Settings.RIGHT
-            self.hero.is_moving = False
-        elif event.key == pygame.K_UP:
-            # 松开上键
-            self.hero.direction = Settings.UP
-            self.hero.is_moving = False
-        elif event.key == pygame.K_DOWN:
-            # 松开下键
-            self.hero.direction = Settings.DOWN
-            self.hero.is_moving = False
+    # def __check_keyup(self, event):
+    #     """检查松开按钮的事件"""
+    #     if event.key == pygame.K_LEFT:
+    #         # 松开左键
+    #         self.hero.direction = Settings.LEFT
+    #         self.hero.is_moving = False
+    #     elif event.key == pygame.K_RIGHT:
+    #         # 松开右键
+    #         self.hero.direction = Settings.RIGHT
+    #         self.hero.is_moving = False
+    #     elif event.key == pygame.K_UP:
+    #         # 松开上键
+    #         self.hero.direction = Settings.UP
+    #         self.hero.is_moving = False
+    #     elif event.key == pygame.K_DOWN:
+    #         # 松开下键
+    #         self.hero.direction = Settings.DOWN
+    #         self.hero.is_moving = False
 
     def __event_handler(self):
         for event in pygame.event.get():
@@ -114,8 +114,8 @@ class TankWar:
                 TankWar.__game_over()
             elif event.type == pygame.KEYDOWN:
                 TankWar.__check_keydown(self, event)
-            elif event.type == pygame.KEYUP:
-                TankWar.__check_keyup(self, event)
+            # elif event.type == pygame.KEYUP:
+            #     TankWar.__check_keyup(self, event)
 
     def __check_collide(self):
         # 保证坦克不移出屏幕
@@ -191,6 +191,7 @@ class TankWar:
         self.__create_sprite()
         start_time = time.time()
         while True and self.hero.is_alive and self.game_still:
+            self.hero.shot()
             self.screen.fill(Settings.SCREEN_COLOR)
             # 1、设置刷新帧率
             self.clock.tick(Settings.FPS)
@@ -220,6 +221,7 @@ class TankWar:
                 pygame.quit()
                 break
             pygame.display.update()
+            self.hero.is_moving = False
         self.__game_over()
 
     @staticmethod

@@ -71,7 +71,7 @@ class Settings:
         UP: "./resources/images/hero/hero1U.gif",
         DOWN: "./resources/images/hero/hero1D.gif"
     }
-    HERO_SPEED = 2
+    HERO_SPEED = 50
 
     #BOSS_IMAGE = "./resources/images/5.png"
     # 我方老家
@@ -88,7 +88,7 @@ class Settings:
 
     # 子弹
     BULLET_IMAGE_NAME = "./resources/images/bullet/bullet.png"
-    BULLET_RECT = Rect(0, 0, 5, 5)
+    BULLET_RECT = Rect(0, 0, 50, 50)
     BULLET_SPEED = 5
 
     # 0表示空白、1表示红墙、2表示铁墙、3表示草、4表示海、5表示鸟

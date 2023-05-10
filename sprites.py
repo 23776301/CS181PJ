@@ -136,7 +136,7 @@ class Hero(TankSprite):
         self.speed = Settings.HERO_SPEED
         self.direction = Settings.UP
         self.is_hit_wall = False
-        self.life = 10
+        self.life = 1
 
         # 初始化英雄的位置
         self.rect.centerx = Settings.SCREEN_RECT.centerx - Settings.BOX_RECT.width * 2
