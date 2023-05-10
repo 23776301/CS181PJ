@@ -191,7 +191,7 @@ class TankWar:
         self.__create_sprite()
         start_time = time.time()
         while True and self.hero.is_alive and self.game_still:
-            self.hero.shot() // ??? hero shot only after last bullet killed ???
+            self.hero.shot() # ??? hero shot only after last bullet killed ???
             self.screen.fill(Settings.SCREEN_COLOR)
             # 1、设置刷新帧率
             self.clock.tick(Settings.FPS)
