@@ -30,8 +30,8 @@ class TankWar:
         self.enemies = pygame.sprite.Group()
         self.enemy_bullets = pygame.sprite.Group()
         self.walls = pygame.sprite.Group()
-        self.enemy_count = Settings.ENEMY_COUNT
-        for i in range(Settings.ENEMY_COUNT):
+        self.enemy_count = 1
+        for i in range(self.enemy_count):
             direction = random.randint(0, 3)
             enemy = Enemy(Settings.ENEMY_IMAGES[direction], self.screen)
             enemy.direction = direction
@@ -191,7 +191,7 @@ class TankWar:
         self.__create_sprite()
         start_time = time.time()
         while True and self.hero.is_alive and self.game_still:
-            self.hero.shot()
+            self.hero.shot() // ??? hero shot only after last bullet killed ???
             self.screen.fill(Settings.SCREEN_COLOR)
             # 1、设置刷新帧率
             self.clock.tick(Settings.FPS)
