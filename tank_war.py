@@ -2,7 +2,7 @@ import tkinter.font
 
 import pygame
 from sprites import *
-
+import sys
 
 class TankWar:
 
@@ -191,7 +191,8 @@ class TankWar:
         self.__create_sprite()
         start_time = time.time()
         while True and self.hero.is_alive and self.game_still:
-            self.hero.shot() # ??? hero shot only after last bullet killed ???
+            spentTime = time.time() - start_time
+            # self.hero.shot() # ??? hero shot only after last bullet killed ???
             self.screen.fill(Settings.SCREEN_COLOR)
             # 1、设置刷新帧率
             self.clock.tick(Settings.FPS)
@@ -202,10 +203,14 @@ class TankWar:
             # 4、更新/绘制精灵/经理组
             self.__update_sprites()
             # 5、更新显示
-            score = Settings.ENEMY_COUNT - len(self.enemies)
+            
+            # Reward value
+            score = 100*(1 - len(self.enemies)) - round(spentTime,1)
+            
             font = pygame.font.SysFont('宋体', 20, True)
-            score_surface1 = font.render("Kill count:" + str(score), True, (255, 255, 255))
-            score_surface2 = font.render("Hp:" + str(self.hero.life), True, (255, 255, 255))
+            score_surface1 = font.render("Reward:" + str(score), True, (255, 255, 255))
+            # score_surface2 = font.render("Hp:" + str(self.hero.life), True, (255, 255, 255))
+            score_surface2 = font.render("Time:" + str(round(Settings.TIME_LIMIT - spentTime,1)), True, (255, 255, 255))
             score_rect1 = score_surface1.get_rect()
             score_rect2 = score_surface1.get_rect()
             score_rect1.right = 19*Settings.BOX_SIZE - 10
@@ -214,17 +219,46 @@ class TankWar:
             score_rect2.top = 30
             self.screen.blit(score_surface1, score_rect1)
             self.screen.blit(score_surface2, score_rect2)
-            if time.time() - start_time > Settings.TIME_LIMIT or len(self.enemies) == 0:
+            pygame.display.update()
+            self.hero.is_moving = False
+            
+            if spentTime > Settings.TIME_LIMIT or len(self.enemies) == 0:
 
                 print("击杀数：{}".format(score))
                 print("剩余血量：{}".format(self.hero.life))
                 pygame.quit()
                 break
-            pygame.display.update()
-            self.hero.is_moving = False
-        self.__game_over()
+        
+        score = 100*(1 - len(self.enemies)) - round(spentTime,1)
+        self.__game_over(score)
 
     @staticmethod
-    def __game_over():
-        pygame.quit()
+    def __game_over(score):
+        pygame.init()
+
+        # 创建总结数据窗口
+        summary_window_width = 960
+        summary_window_height = 540
+        summary_window = pygame.display.set_mode((summary_window_width, summary_window_height))
+        pygame.display.set_caption("Summary Data")
+
+        # 渲染总结数据文本
+        summary_data_font = pygame.font.Font(None, 24)
+        summary_data_text = ("Score: {}".format(score))
+        summary_data_render = summary_data_font.render(summary_data_text, True, (255, 255, 255))
+
+        # 在总结数据窗口中居中绘制文本
+        summary_data_x = (summary_window_width - summary_data_render.get_width()) // 2
+        summary_data_y = (summary_window_height - summary_data_render.get_height()) // 2
+        summary_window.blit(summary_data_render, (summary_data_x, summary_data_y))
+
+        # 更新总结数据窗口并等待关闭事件
+        pygame.display.flip()
+
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+
         exit()

@@ -153,6 +153,7 @@ class Hero(TankSprite):
             self.is_hit_wall = True
 
     def update(self):
+        self.shot()
         if not self.is_hit_wall:
             super().update()
             self.__turn()
@@ -189,11 +190,22 @@ class Enemy(TankSprite):
         self.direction = directions[random.randint(0, 2)]
         self.terminal = float(random.randint(40*2, 40*8))
         self.image = pygame.image.load(Settings.ENEMY_IMAGES.get(self.direction))
+    
+    # def Astar_turn(self, hero):
+    #     # A*算法转向?
+    #     self.is_hit_wall = False
+    #     self.direction = Astar(self.rect.center, hero.rect.center)
+    #     self.terminal = float(random.randint(40*2, 40*8))
+    #     self.image = pygame.image.load(Settings.ENEMY_IMAGES.get(self.direction))
 
     def random_shot(self):
         shot_flag = random.choice([True] + [False]*59)
         if shot_flag:
             super().shot()
+    
+    def keep_shot(self):
+        super().shot()
+        
 
     def hit_wall_turn(self):
         turn = False
@@ -213,7 +225,7 @@ class Enemy(TankSprite):
             self.random_turn()
 
     def update(self):
-        self.random_shot()
+        self.keep_shot()
         if self.terminal <= 0:
             self.random_turn()
         else:
