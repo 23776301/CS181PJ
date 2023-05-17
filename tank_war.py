@@ -1,5 +1,3 @@
-import tkinter.font
-
 import pygame
 from sprites import *
 import sys
@@ -186,6 +184,212 @@ class TankWar:
         self.screen.blit(self.hero.image, self.hero.rect)
         self.walls.draw(self.screen)
 
+    def optimize_path3(self):
+        """
+        找到距离self.hero最近的enemy，并使用深度优先搜索对hero做路径规划，使其一边射击，一边向enemy的方向走;
+        如果没有找到合适的路径，随机生成一个
+        """
+        def is_valid(pos):
+            x, y = pos
+            if x < 0 or x >= Settings.SCREEN_RECT.width:
+                return False
+            if y < 0 or y >= Settings.SCREEN_RECT.height:
+                return False
+            return True
+
+        # 计算两个物体之间的距离
+        def distance(sprite1, sprite2):
+            x1, y1 = sprite1.rect.center
+            x2, y2 = sprite2.rect.center
+            return ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
+
+
+        def dfs(start, end, max_depth=50):
+            # 初始化栈和访问集合
+            stack = [(start, 0)]
+            visited = set()
+            predecessors = {start: None}
+
+            # 定义方向数组
+            directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
+
+            # 深度优先搜索
+            while stack:
+                current, depth = stack.pop()
+                if ((current[0] - end[0]) ** 2 + (current[1] - end[1]) ** 2) ** 0.5<=Settings.HERO_SPEED*5:
+                    # 找到目标，回溯路径
+                    path = []
+                    path.append(current)
+                    #current = predecessors[current]
+                    return path[::-1]
+
+                if depth < max_depth:
+                    for direction in directions:
+                        next_pos = (current[0] + direction[0]*Settings.HERO_SPEED*5, current[1] + direction[1]*Settings.HERO_SPEED*5)
+                        if next_pos not in visited:
+                            # 检查下一个位置是否可行
+                            if is_valid(next_pos):
+                                stack.append((next_pos, depth + 1))
+                                visited.add(next_pos)
+                                predecessors[next_pos] = current
+
+            # 没有找到路径，返回None
+            return None
+
+
+        if len(self.enemies):
+            self.hero.shot()
+            nearest_enemy = min(self.enemies, key=lambda enemy: distance(self.hero, enemy))
+            # 找到距离英雄最近的敌人
+            nearest_enemy = min(self.enemies, key=lambda enemy: distance(self.hero, enemy))
+
+            # 更新英雄的位置和方向
+            path = dfs(self.hero.rect.center, nearest_enemy.rect.center)
+            #print(path)
+
+        if path:
+            next_pos = path[0]
+            if next_pos[0] < self.hero.rect.centerx:
+                self.hero.direction = Settings.LEFT
+            elif next_pos[0] > self.hero.rect.centerx:
+                self.hero.direction = Settings.RIGHT
+            elif next_pos[1] < self.hero.rect.centery:
+                self.hero.direction = Settings.UP
+            elif next_pos[1] > self.hero.rect.centery:
+                self.hero.direction = Settings.DOWN
+
+        # 英雄射击
+
+            self.hero.is_moving = True
+            self.hero.is_hit_wall = False
+            self.hero.update()
+        else:
+            directions = [i for i in range(4)]
+            self.hero.direction = directions[random.randint(0, 2)]
+            self.hero.is_moving = True
+            self.hero.is_hit_wall = False
+            self.hero.update()
+        self.hero.shot()
+
+
+    def optimize_path2(self):
+        """
+        找到距离self.hero最近的enemy，并使用广度优先搜索对hero做路径规划，使其一边射击，一边向enemy的方向走;
+        如果没有找到合适的路径，随机生成一个
+        """
+        def is_valid(pos):
+            x, y = pos
+            if x < 0 or x >= Settings.SCREEN_RECT.width:
+                return False
+            if y < 0 or y >= Settings.SCREEN_RECT.height:
+                return False
+            return True
+
+        # 计算两个物体之间的距离
+        def distance(sprite1, sprite2):
+            x1, y1 = sprite1.rect.center
+            x2, y2 = sprite2.rect.center
+            return ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
+
+        # 使用广度优先搜索算法对英雄进行路径规划
+        def bfs(start, end):
+            # 初始化队列和访问集合
+            queue = [start]
+            visited = set()
+            predecessors = {start: None}
+
+            # 定义方向数组
+            directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
+
+            # 广度优先搜索
+            while queue:
+                current = queue.pop(0)
+                # print(((current[0] - end[0]) ** 2 + (current[1] - end[1]) ** 2) ** 0.5)
+                if ((current[0] - end[0]) ** 2 + (current[1] - end[1]) ** 2) ** 0.5<=Settings.HERO_SPEED*5:
+                    # 找到目标，回溯路径
+                    path = []
+                    # while current:
+                    path.append(current)
+                    # current = predecessors[current]
+                    return path[::-1]
+
+                for direction in directions:
+                    next_pos = (current[0] + direction[0]*Settings.HERO_SPEED*5, current[1] + direction[1]*Settings.HERO_SPEED*5)
+                    if next_pos not in visited:
+                        # 检查下一个位置是否可行
+                        if is_valid(next_pos):
+                            queue.append(next_pos)
+                            visited.add(next_pos)
+                            predecessors[next_pos] = current
+
+            # 没有找到路径，返回None
+            return None
+
+        # 找到距离英雄最近的敌人
+        path = None
+        if len(self.enemies):
+            self.hero.shot()
+            nearest_enemy = min(self.enemies, key=lambda enemy: distance(self.hero, enemy))
+            # 更新英雄的位置和方向
+            path = bfs(self.hero.rect.center, nearest_enemy.rect.center)
+        # print(path)
+
+        if path:
+            next_pos = path[0]
+            if next_pos[0] < self.hero.rect.centerx:
+                self.hero.direction = Settings.LEFT
+            elif next_pos[0] > self.hero.rect.centerx:
+                self.hero.direction = Settings.RIGHT
+            elif next_pos[1] < self.hero.rect.centery:
+                self.hero.direction = Settings.UP
+            elif next_pos[1] > self.hero.rect.centery:
+                self.hero.direction = Settings.DOWN
+
+        # 英雄射击
+
+            self.hero.is_moving = True
+            self.hero.is_hit_wall = False
+            self.hero.update()
+
+    def optimize_path1(self):
+        """
+        找到距离self.hero最近的enemy，计算和目标之间的相对位置，根据相对位置确定下一个前进方向
+        """
+        def distance(sprite1, sprite2):
+            x1, y1 = sprite1.rect.center
+            x2, y2 = sprite2.rect.center
+            return ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
+
+        # 找到距离英雄最近的敌人
+        if len(self.enemies):
+            self.hero.shot()
+            nearest_enemy = min(self.enemies, key=lambda enemy: distance(self.hero, enemy))
+
+            # 计算英雄和目标之间的相对位置
+            dx = nearest_enemy.rect.centerx - self.hero.rect.centerx
+            dy = nearest_enemy.rect.centery - self.hero.rect.centery
+
+            # 根据相对位置确定下一个前进方向
+            if abs(dx) > abs(dy):
+                if dx < 0:
+                    next_direction = Settings.LEFT
+                else:
+                    next_direction = Settings.RIGHT
+            else:
+                if dy < 0:
+                    next_direction = Settings.UP
+                else:
+                    next_direction = Settings.DOWN
+
+            # 更新英雄的方向
+            self.hero.direction = next_direction
+            # print(next_direction,self.hero.rect.center)
+            self.hero.is_moving = True
+            self.hero.is_hit_wall = False
+            self.hero.update()
+
+
+
     def run_game(self):
         self.__init_game()
         self.__create_sprite()
@@ -197,6 +401,9 @@ class TankWar:
             # 1、设置刷新帧率
             self.clock.tick(Settings.FPS)
             # 2、事件监听
+            self.optimize_path1()
+            #self.optimize_path2()
+            #self.optimize_path3()
             self.__event_handler()
             # 3、碰撞监测
             self.__check_collide()
