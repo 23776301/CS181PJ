@@ -3,7 +3,7 @@ from tkinter import messagebox
 
 
 class Cell:
-    def __init__(self, row, col):
+    def __init__(self, row, col,cell_state):
         """
         每个单元格的表示和状态信息
 
@@ -14,7 +14,7 @@ class Cell:
         self.row = row
         self.col = col
         # 游戏空间：0 = 空，1 = 代理，2 = 目标，3 = 墙，4 = 代理子弹，5 = 目标子弹。
-        self.cellstate = 0
+        self.cellstate = cell_state
 
     def draw(self, canvas, cell_size):
         """
@@ -34,19 +34,35 @@ class Cell:
         y3 = y1 + cell_size/2
         
         
-        # 游戏空间：0 = 空，1 = 代理，2 = 目标，3 = 墙，4 = 代理子弹，5 = 目标子弹。
+        # 游戏空间：
+        # 0 = 空，
+        # 1 = 代理，
+        # 2 = 目标，
+        # 3 = 墙，
+        # 4 = 代理子弹，
+        # 5 = 目标子弹。
+        # 14 = 代理子弹+agent
+        # 25 = 目标子弹+target
         if self.cellstate==0:
             canvas.create_rectangle(x1, y1, x2, y2, fill="white")
-        elif self.cellstate==1:
-            canvas.creat_oval(x1, y1, x2, y2, fill="red")
-        elif self.cellstate==2:
-            canvas.create_oval(x1, y1, x2, y2, fill="blue")
         elif self.cellstate==3:
             canvas.create_rectangle(x1, y1, x2, y2, fill="black")
+            
+        elif self.cellstate==1:
+            canvas.create_oval(x1, y1, x2, y2, fill="red")
+        elif self.cellstate==2:
+            canvas.create_oval(x1, y1, x2, y2, fill="blue")
         elif self.cellstate==4:
-            canvas.creat_oval(x1, y1, x3, y3, fill="red")
+            canvas.create_oval(x3-cell_size/3, y3-cell_size/3, x3+cell_size/3, y3+cell_size/3, fill="red")
         elif self.cellstate==5:
-            canvas.creat_oval(x1, y1, x3, y3, fill="blue")
+            canvas.create_oval(x3-cell_size/3, y3-cell_size/3, x3+cell_size/3, y3+cell_size/3, fill="blue")
+        
+        elif self.cellstate==14:
+            canvas.create_oval(x1, y1, x2, y2, fill="red")
+            canvas.create_oval(x3-cell_size/3, y3-cell_size/3, x3+cell_size/3, y3+cell_size/3, fill="red")
+        elif self.cellstate==25:
+            canvas.create_oval(x1, y1, x2, y2, fill="blue")
+            canvas.create_oval(x3-cell_size/3, y3-cell_size/3, x3+cell_size/3, y3+cell_size/3, fill="blue")
             
             
 
@@ -62,9 +78,10 @@ class Agent:
         """
         self.row = row
         self.col = col
-        self.direction = None
+        self.direction = 'down'
 
     def move(self, direction, game_space):
+        self.direction = direction
         next_row, next_col = self.get_next_position(direction)
         if self.is_valid_move(next_row, next_col, game_space):
             game_space[next_row][next_col] = self.fire_bullet()
@@ -107,7 +124,7 @@ class Agent:
         """
         if row < 0 or row >= len(game_space) or col < 0 or col >= len(game_space[0]):
             return False  # 移动超出边界
-        if game_space[row][col] != 0:
+        if game_space[row][col] == 3:
             return False  # 移动到非空单元格
         return True
 
@@ -142,14 +159,8 @@ class Agent:
         """
         发射子弹
         """
-        return Bullet(self.row, self.col, self.direction , 2)
-    
-    def draw(self, canvas, cell_size):
-        x1 = self.col * cell_size
-        y1 = self.row * cell_size
-        x2 = x1 + cell_size
-        y2 = y1 + cell_size
-        canvas.create_oval(x1, y1, x2, y2, fill="red")
+        return Bullet(self.row, self.col, self.direction , 1, "agent")
+
 
 class Target:
     def __init__(self, row, col):
@@ -162,8 +173,9 @@ class Target:
         """
         self.row = row
         self.col = col
-        self.direction = None
+        self.direction = 'up'
     def move(self, direction, game_space):
+        self.direction = direction
         next_row, next_col = self.get_next_position(direction)
         if self.is_valid_move(next_row, next_col, game_space):
             game_space[next_row][next_col] = self.fire_bullet()
@@ -204,7 +216,7 @@ class Target:
         """
         if row < 0 or row >= len(game_space) or col < 0 or col >= len(game_space[0]):
             return False  # 移动超出边界
-        if game_space[row][col] != 0:
+        if game_space[row][col] == 3:
             return False  # 移动到非空单元格
         return True
     
@@ -220,18 +232,10 @@ class Target:
         """
         发射子弹
         """
-        return Bullet(self.row, self.col, self.direction , 2)
-    
-    def draw(self, canvas, cell_size):
-        x1 = self.col * cell_size
-        y1 = self.row * cell_size
-        x2 = x1 + cell_size
-        y2 = y1 + cell_size
-        canvas.create_oval(x1, y1, x2, y2, fill="blue")
-
+        return Bullet(self.row, self.col, self.direction , 1, "target")
 
 class Bullet:
-    def __init__(self, row, col, direction, speed):
+    def __init__(self, row, col, direction, speed, owner):
         """
         子弹的表示和状态信息
 
@@ -245,9 +249,40 @@ class Bullet:
         self.col = col
         self.direction = direction
         self.speed = speed
-        self.owner = None
+        self.owner = owner
+    def get_next_position(self, direction):
+        """
+        获取下一个位置的行和列
 
-    def move(self,game_space):
+        Args:
+            direction (str): 移动方向 ('up', 'down', 'left', 'right')
+
+        Returns:
+            Tuple[int, int]: 下一个位置的行和列
+        """
+        if direction == "up":
+            return self.row - 1, self.col
+        elif direction == "down":
+            return self.row + 1, self.col
+        elif direction == "left":
+            return self.row, self.col - 1
+        elif direction == "right":
+            return self.row, self.col + 1
+    def bullet_move_result(self, game_space):
+        """
+        0. normal, move onto empty cell
+        1. hit wall, bounce back
+        2. someone die, end the game
+        3. 
+        """
+        
+        
+        self.bullet_normal_move(game_space)
+        return 0
+        
+        
+
+    def bullet_normal_move(self,game_space):
         if self.direction == "up":
             self.row -= self.speed
         elif self.direction == "down":
@@ -259,23 +294,6 @@ class Bullet:
 
         game_space[self.row][self.col] = self
 
-    def draw(self, canvas, cell_size):
-        """
-        在画布上绘制子弹
-
-        Args:
-            canvas (tkinter.Canvas): 画布对象
-            cell_size (int): 单元格的大小
-        """
-        x1 = self.col * cell_size + cell_size // 2 - 2
-        y1 = self.row * cell_size + cell_size // 2 - 2
-        x2 = x1 + 4
-        y2 = y1 + 4
-
-        if self.direction == "up" or self.direction == "down":
-            canvas.create_oval(x1, y1, x2, y2, fill="red")
-        else:
-            canvas.create_oval(x1, y1, x2, y2, fill="blue")
 class Game:
     def __init__(self, width, height):
         """
@@ -292,91 +310,96 @@ class Game:
         self.root.title("射击游戏")
 
         self.cell_size = 30
-        self.space = [[False for _ in range(width)] for _ in range(height)]
         self.game_space = [[0 for _ in range(width)] for _ in range(height)]
+        self.game_space[2][2] = 3
 
         self.agent = Agent(0, 0)
         self.target = Target(height - 1, width - 1)
+        self.agent_bullets:list[Bullet] = []
+        self.target_bullet:list[Bullet] = []
+        self.update_game_space()
+        
+    def update_game_space(self):
+        # if not wall, clear to 0
+        for row in range(self.height):
+            for col in range(self.width):
+                if self.game_space[row][col] != 3:
+                    self.game_space[row][col] = 0
+        # if bullet, set to 4 or 5
+        if self.agent_bullets is not None:
+            for bullet in self.agent_bullets:
+                self.game_space[bullet.row][bullet.col] = 4
+        if self.target_bullet is not None:
+            for bullet in self.target_bullet:
+                self.game_space[bullet.row][bullet.col] = 5
+        
+        # if agent, set to 1 or 14
+        if self.game_space[self.agent.row][self.agent.col] == 4:
+            self.game_space[self.agent.row][self.agent.col] = 14
+        else:
+            self.game_space[self.agent.row][self.agent.col] = 1
+        # if target, set to 2 or 25
+        if self.game_space[self.target.row][self.target.col] == 5:
+            self.game_space[self.target.row][self.target.col] = 25
+        else:
+            self.game_space[self.target.row][self.target.col] = 2
+        
+        # print(self.game_space)
 
-        self.agent_bullet = None
-        self.target_bullet = None
 
-    def draw1(self):
-        """
-        在画布上绘制游戏界面
-        """
+
+    def draw(self):
         self.canvas.delete("all")  # 清空画布
 
         for row in range(self.height):
             for col in range(self.width):
-                cell = Cell(row, col)
-                cell.is_wall = self.space[row][col]
-                cell.draw(self.canvas, self.cell_size)
-
-        self.agent.draw(self.canvas, self.cell_size)
-        self.target.draw(self.canvas, self.cell_size)
-
-        if self.agent_bullet is not None:
-            self.agent_bullet.move()
-            self.agent_bullet.draw(self.canvas, self.cell_size)
-
-            if self.agent_bullet.row < 0 or self.agent_bullet.row >= self.height or self.agent_bullet.col < 0 or self.agent_bullet.col >= self.width:
-                self.agent_bullet = None
-            elif self.agent_bullet.row == self.target.row and self.agent_bullet.col == self.target.col:
-                messagebox.showinfo("游戏结束", "目标被击中！")
-                self.root.quit()
-
-        if self.target_bullet is not None:
-            self.target_bullet.move()
-            self.target_bullet.draw(self.canvas, self.cell_size)
-
-            if self.target_bullet.row < 0 or self.target_bullet.row >= self.height or self.target_bullet.col < 0 or self.target_bullet.col >= self.width:
-                self.target_bullet = None
-            elif self.target_bullet.row == self.agent.row and self.target_bullet.col == self.agent.col:
-                messagebox.showinfo("游戏结束", "代理被击中！")
-                self.root.quit()
-    def draw(self):
-        self.canvas.delete("all")
-
-        for row in range(self.height):
-            for col in range(self.width):
-                cell = Cell(row, col)
-                cell.is_wall = self.space[row][col]
-                cell.draw(self.canvas, self.cell_size)
-
-                if self.game_space[row][col] != 0:
-                    self.game_space[row][col].draw(self.canvas, self.cell_size)
-
-        self.agent.draw(self.canvas, self.cell_size)
-        self.target.draw(self.canvas, self.cell_size)
-        if self.agent_bullet is not None:
-            self.agent_bullet.move()
-            self.agent_bullet.draw(self.canvas, self.cell_size)
-
-            if self.agent_bullet.row < 0 or self.agent_bullet.row >= self.height or self.agent_bullet.col < 0 or self.agent_bullet.col >= self.width:
-                self.agent_bullet = None
-            elif self.game_space[self.agent_bullet.row][self.agent_bullet.col] == self.target:
-                messagebox.showinfo("游戏结束", "目标被击中！")
-                self.root.quit()
-
-        if self.target_bullet is not None:
-            self.target_bullet.move()
-            self.target_bullet.draw(self.canvas, self.cell_size)
-
-            if self.target_bullet.row < 0 or self.target_bullet.row >= self.height or self.target_bullet.col < 0 or self.target_bullet.col >= self.width:
-                self.target_bullet = None
-            elif self.game_space[self.target_bullet.row][self.target_bullet.col] == self.agent:
-                messagebox.showinfo("游戏结束", "代理被击中！")
-                self.root.quit()
+                cell = Cell(row, col,self.game_space[row][col])
+                cell.draw(self.canvas, self.cell_size)        
 
     def key_press(self, event):
         """
         键盘按下事件处理函数
         """
         key = event.keysym.lower()
-        if key:
-            self.target_bullet = self.target.fire_bullet()
-            self.agent_bullet = self.agent.fire_bullet()
+        # if key:
+            
+        # 1, move bullets first
+        if self.agent_bullets is not None:
+            for a_b in self.agent_bullets:
+                a_b.bullet_move_result(self.game_space)
+        if self.target_bullet is not None:
+            for t_b in self.target_bullet:
+                t_b.bullet_move_result(self.game_space)
+        
+        # 2, check if anyone die
+        #     if self.agent_bullets is not None:
+        #         self.agent_bullets.move()
+        #         self.agent_bullets.draw(self.canvas, self.cell_size)
+
+        #         if self.agent_bullets.row < 0 or self.agent_bullets.row >= self.height or self.agent_bullets.col < 0 or self.agent_bullets.col >= self.width:
+        #             self.agent_bullets = None
+        #         elif self.agent_bullets.row == self.target.row and self.agent_bullets.col == self.target.col:
+        #             messagebox.showinfo("游戏结束", "目标被击中！")
+        #             self.root.quit()
+
+        #     if self.target_bullet is not None:
+        #         self.target_bullet.move()
+        #         self.target_bullet.draw(self.canvas, self.cell_size)
+
+        #         if self.target_bullet.row < 0 or self.target_bullet.row >= self.height or self.target_bullet.col < 0 or self.target_bullet.col >= self.width:
+        #             self.target_bullet = None
+        #         elif self.target_bullet.row == self.agent.row and self.target_bullet.col == self.agent.col:
+        #             messagebox.showinfo("游戏结束", "代理被击中！")
+        #             self.root.quit()
+
+        
+        
+        
+        
+        
+        # 3, use keyboard or AI to get action and move agent and target
+        
+        
         if key == "up":
             self.agent.move("up", self.game_space)
         elif key == "down":
@@ -385,6 +408,18 @@ class Game:
             self.agent.move("left", self.game_space)
         elif key == "right":
             self.agent.move("right", self.game_space)
+        
+        
+        
+        
+        
+        # 4, fire bullets
+        self.agent_bullets.append(self.agent.fire_bullet())
+        self.target_bullet.append(self.target.fire_bullet())
+        
+        self.update_game_space()
+            
+        print(self.game_space)  
 
         self.draw()
 
