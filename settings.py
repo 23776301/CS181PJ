@@ -13,7 +13,8 @@ class Settings:
     SCREEN_COLOR = (0, 0, 0)    # 屏幕颜色
 
     TIME_LIMIT = 30
-
+    HERO_BULLET = 0
+    ENEMY_BULLET = 1
     # 通用变量
     LEFT = 0
     RIGHT = 1

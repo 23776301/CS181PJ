@@ -1,7 +1,7 @@
 import pygame
 from sprites import *
 import sys
-
+import math
 class TankWar:
 
     def __init__(self):
@@ -20,6 +20,15 @@ class TankWar:
         :return:
         """
         pygame.init()   # 初始化pygame模块
+        
+        # pygame.event.set_grab(True)
+        # pygame.mouse.set_visible(False)
+        # if sys.platform.startswith('linux'):
+        #     import subprocess
+        #     subprocess.Popen(['wmctrl', '-a', 'Summary: Press SPACE to quit'])
+        # if sys.platform == 'win32':
+        #     import ctypes
+        #     ctypes.windll.user32.SetForegroundWindow(pygame.display.get_wm_info()['window'])
         pygame.display.set_caption(Settings.GAME_NAME)  # 设置窗口标题
         pygame.mixer.init()    # 初始化音频模块
 
@@ -82,6 +91,60 @@ class TankWar:
             self.hero.direction = Settings.DOWN
             self.hero.is_moving = True
             self.hero.is_hit_wall = False
+            
+    def __go_left(self):
+        self.hero.direction = Settings.LEFT
+        self.hero.is_moving = True
+        self.hero.is_hit_wall = False
+    def __go_right(self):
+        self.hero.direction = Settings.RIGHT
+        self.hero.is_moving = True
+        self.hero.is_hit_wall = False
+    def __go_up(self):
+        self.hero.direction = Settings.UP
+        self.hero.is_moving = True
+        self.hero.is_hit_wall = False
+    def __go_down(self):
+        self.hero.direction = Settings.DOWN
+        self.hero.is_moving = True
+        self.hero.is_hit_wall = False
+        
+        
+    import math
+
+    def calculate_distance(self,pos1, pos2):
+        """Calculate the Euclidean distance between two positions"""
+        x1, y1 = pos1
+        x2, y2 = pos2
+        distance = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+        return distance
+
+    def __AI_key_player(self):
+    # """AI controller to greedy move the tank closer to the enemy"""
+    # Calculate the distance between the tank and the enemy
+        enemy_distance = self.calculate_distance(self.hero.rect.center, self.enemies.sprites()[0].rect.center)
+
+        # Set the tank's direction towards the enemy based on the shortest distance
+        if enemy_distance > 0:
+            x_diff = self.enemies.sprites()[0].rect.centerx - self.hero.rect.centerx
+            y_diff = self.enemies.sprites()[0].rect.centery - self.hero.rect.centery
+            if abs(x_diff) > abs(y_diff):
+                self.hero.direction = Settings.RIGHT if x_diff > 0 else Settings.LEFT
+            else:
+                self.hero.direction = Settings.DOWN if y_diff > 0 else Settings.UP
+        else:
+            # If the tank is already at the enemy's position, stop moving
+            self.hero.is_moving = False
+
+        # Update the tank's movement status
+        self.hero.is_hit_wall = False
+        self.hero.is_moving = True
+
+        
+        
+        
+        
+        
         #elif event.key == pygame.K_SPACE:
             # 坦克发子弹
         #    self.hero.shot()
@@ -106,14 +169,30 @@ class TankWar:
     #         self.hero.is_moving = False
 
     def __event_handler(self):
+        
+        if pygame.time.get_ticks() % 1000 == 0:
+            TankWar.__AI_key_player(self)
+        # Add your state update code here
         for event in pygame.event.get():
             # 判断是否是退出游戏
             if event.type == pygame.QUIT:
                 TankWar.__game_over()
-            elif event.type == pygame.KEYDOWN:
-                TankWar.__check_keydown(self, event)
+            # elif event.type == pygame.KEYDOWN:
+                # TankWar.__check_keydown(self, event)
             # elif event.type == pygame.KEYUP:
             #     TankWar.__check_keyup(self, event)
+    
+    def __AI_handler(self):
+        for event in pygame.event.get():
+            # 判断是否是退出游戏
+            if event.type == pygame.QUIT:
+                TankWar.__game_over()
+            else:
+                # pass
+                self.path_naive_greedy()
+                # self.path_bfs()
+                # self.path_dfs()
+        
 
     def __check_collide(self):
         # 保证坦克不移出屏幕
@@ -171,6 +250,7 @@ class TankWar:
                     self.hero.kill()
 
     def __update_sprites(self):
+        # self.hero.update()
         if self.hero.is_moving:
             self.hero.update()
         self.walls.update()
@@ -184,7 +264,7 @@ class TankWar:
         self.screen.blit(self.hero.image, self.hero.rect)
         self.walls.draw(self.screen)
 
-    def optimize_path3(self):
+    def path_dfs(self):
         """
         找到距离self.hero最近的enemy，并使用深度优先搜索对hero做路径规划，使其一边射击，一边向enemy的方向走;
         如果没有找到合适的路径，随机生成一个
@@ -238,7 +318,7 @@ class TankWar:
 
 
         if len(self.enemies):
-            self.hero.shot()
+            # self.hero.shot()
             nearest_enemy = min(self.enemies, key=lambda enemy: distance(self.hero, enemy))
             # 找到距离英雄最近的敌人
             nearest_enemy = min(self.enemies, key=lambda enemy: distance(self.hero, enemy))
@@ -272,7 +352,7 @@ class TankWar:
         self.hero.shot()
 
 
-    def optimize_path2(self):
+    def path_bfs(self):
         """
         找到距离self.hero最近的enemy，并使用广度优先搜索对hero做路径规划，使其一边射击，一边向enemy的方向走;
         如果没有找到合适的路径，随机生成一个
@@ -328,7 +408,7 @@ class TankWar:
         # 找到距离英雄最近的敌人
         path = None
         if len(self.enemies):
-            self.hero.shot()
+            # self.hero.shot()
             nearest_enemy = min(self.enemies, key=lambda enemy: distance(self.hero, enemy))
             # 更新英雄的位置和方向
             path = bfs(self.hero.rect.center, nearest_enemy.rect.center)
@@ -351,7 +431,7 @@ class TankWar:
             self.hero.is_hit_wall = False
             self.hero.update()
 
-    def optimize_path1(self):
+    def path_naive_greedy(self):
         """
         找到距离self.hero最近的enemy，计算和目标之间的相对位置，根据相对位置确定下一个前进方向
         """
@@ -362,7 +442,7 @@ class TankWar:
 
         # 找到距离英雄最近的敌人
         if len(self.enemies):
-            self.hero.shot()
+            # self.hero.shot()
             nearest_enemy = min(self.enemies, key=lambda enemy: distance(self.hero, enemy))
 
             # 计算英雄和目标之间的相对位置
@@ -385,8 +465,8 @@ class TankWar:
             self.hero.direction = next_direction
             # print(next_direction,self.hero.rect.center)
             self.hero.is_moving = True
-            self.hero.is_hit_wall = False
-            self.hero.update()
+            # self.hero.is_hit_wall = False
+            # self.hero.update()
 
 
 
@@ -394,17 +474,22 @@ class TankWar:
         self.__init_game()
         self.__create_sprite()
         start_time = time.time()
+        time0_1 = time.time()
         while True and self.hero.is_alive and self.game_still:
             spentTime = time.time() - start_time
-            # self.hero.shot() # ??? hero shot only after last bullet killed ???
+            self.hero.shot() # ??? hero shot only after last bullet killed ???
             self.screen.fill(Settings.SCREEN_COLOR)
             # 1、设置刷新帧率
             self.clock.tick(Settings.FPS)
             # 2、事件监听
-            self.optimize_path1()
-            #self.optimize_path2()
-            #self.optimize_path3()
+            
+            # Our AI hero
+            # if pygame.time.get_ticks()% 1000 != 0:
+                # self.__AI_handler()
+            
+            # Player control hero by keyboard
             self.__event_handler()
+            
             # 3、碰撞监测
             self.__check_collide()
             # 4、更新/绘制精灵/经理组
@@ -461,11 +546,21 @@ class TankWar:
 
         # 更新总结数据窗口并等待关闭事件
         pygame.display.flip()
+        
+        
+        # pygame.event.set_grab(True)
+        # pygame.mouse.set_visible(False)
 
         while True:
+            # Event handling
+            
+            # pygame.event.set_grab(True)
+            # pygame.mouse.set_visible(False)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    pygame.quit()
                     sys.exit()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        sys.exit()
 
         exit()

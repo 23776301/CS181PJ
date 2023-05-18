@@ -48,6 +48,7 @@ class TankSprite(BaseSprite):
         super().__init__(image_name, screen)
         self.type = None
         self.bullets = pygame.sprite.Group()
+        self.bullets_type = None
         self.is_alive = True
         self.is_moving = False
 
@@ -66,6 +67,9 @@ class TankSprite(BaseSprite):
         if self.type == Settings.HERO:
             pygame.mixer.music.load(Settings.FIRE_MUSIC)
             pygame.mixer.music.play()
+            self.bullets_type = Settings.HERO_BULLET
+        else:
+            self.bullets_type = Settings.ENEMY_BULLET
 
         # 发射子弹
         bullet = Bullet(Settings.BULLET_IMAGE_NAME, self.screen)
@@ -157,6 +161,11 @@ class Hero(TankSprite):
         if not self.is_hit_wall:
             super().update()
             self.__turn()
+    # def update(self):
+    #     self.shot()
+    #     if not self.is_hit_wall:
+    #         super().update()
+    #         # self.__turn()
     '''
     def kill(self):
         self.is_alive = False
