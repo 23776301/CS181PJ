@@ -59,8 +59,8 @@ class Target:
                            self.x + self.radius, self.y + self.radius,
                            fill=self.color)
     def move(self, path):
-        if self.step > 5000:
-            return
+        if self.step > 5000 or self.x > 490 or self.x < 10 or self.y < 10 or self.y > 490 :  
+            return  
         self.x += path[self.step % 50][0]
         self.y += path[self.step % 50][1]
         self.step += 1
