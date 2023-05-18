@@ -33,7 +33,7 @@ class Cell:
         x3 = x1 + cell_size/2
         y3 = y1 + cell_size/2
         
-        
+        """
         # 游戏空间：
         # 0 = 空，
         # 1 = 代理，
@@ -43,6 +43,7 @@ class Cell:
         # 5 = 目标子弹。
         # 14 = 代理子弹+agent
         # 25 = 目标子弹+target
+        """
         if self.cellstate==0:
             canvas.create_rectangle(x1, y1, x2, y2, fill="white")
         elif self.cellstate==3:
@@ -64,8 +65,31 @@ class Cell:
             canvas.create_oval(x1, y1, x2, y2, fill="blue")
             canvas.create_oval(x3-cell_size/3, y3-cell_size/3, x3+cell_size/3, y3+cell_size/3, fill="blue")
             
-            
+"""
+# 游戏空间：
+# 0 = 空，
+# 1 = 代理，
+# 2 = 目标，
+# 3 = 墙，
+# 4 = 代理子弹，
+# 5 = 目标子弹。
+# 14 = 代理子弹+agent
+# 25 = 目标子弹+target
+"""
+def BFS(game_space):
+    pass
+def DFS(game_space):
+    pass
+def Astar(game_space):
+    pass
+def greedy(game_space):
+    pass
+def scaredConsiderEnemyBullets(game_space):
+    pass
+def braveConsiderEnemyBullets(game_space):
+    pass
 
+    
 
 class Agent:
     def __init__(self, row, col):
@@ -137,23 +161,25 @@ class Agent:
 
         Returns:
             str: 移动方向 ('up', 'down', 'left', 'right')
+
+
+
+        Usage:
+            str = BFS(self.game_space)
+            str = DFS(self.game_space)
+            str = Astar(self.game_space)
+            str = greedy(self.game_space)
+            str = scaredConsiderEnemyBullets(self.game_space)
+            ...
+            
+            
+        When finishing this, just pass str as the direction to move()
+        Example:
+            agent.move(agent.get_action(game_space), game_space)
+            
+                
         """
-        while True:
-            action = input("请输入移动方向(WASD或上下左右): ").lower()
-            if action == "w" or action == "up":
-                if self.is_valid_move(self.row - 1, self.col, game_space):
-                    return "up"
-            elif action == "s" or action == "down":
-                if self.is_valid_move(self.row + 1, self.col, game_space):
-                    return "down"
-            elif action == "a" or action == "left":
-                if self.is_valid_move(self.row, self.col - 1, game_space):
-                    return "left"
-            elif action == "d" or action == "right":
-                if self.is_valid_move(self.row, self.col + 1, game_space):
-                    return "right"
-            else:
-                print("无效的移动方向，请重新输入！")
+
                 
     def fire_bullet(self):
         """
@@ -275,10 +301,42 @@ class Bullet:
         2. someone die, end the game
         3. 
         """
+        next_row, next_col = self.get_next_position(self.direction)
+        if (
+            next_row < 0
+            or next_row >= len(game_space)
+            or next_col < 0
+            or next_col >= len(game_space[0])
+        ):
+            # out of map
+            return -1
         
-        
-        self.bullet_normal_move(game_space)
-        return 0
+        next_cell = game_space[next_row][next_col]
+
+        if next_cell == 0:
+            # Case 0: Normal move onto an empty cell
+            self.bullet_normal_move(game_space)
+            return 0
+        elif next_cell == 3:
+            # Case 1: Hit a wall, bounce back
+            if self.direction == "up":
+                self.direction = "down"
+            elif self.direction == "down":
+                self.direction = "up"
+            elif self.direction == "left":
+                self.direction = "right"
+            elif self.direction == "right":
+                self.direction = "left"
+            return 1
+        elif next_cell == 1 and self.owner == "target":
+            # Case 2: target kills agent, end the game
+            return 2
+        elif next_cell == 2 and self.owner == "agent":
+            # Case 3: agent kills target, end the game
+            return 3
+        else:
+            self.bullet_normal_move(game_space)
+            return 0
         
         
 
@@ -316,7 +374,7 @@ class Game:
         self.agent = Agent(0, 0)
         self.target = Target(height - 1, width - 1)
         self.agent_bullets:list[Bullet] = []
-        self.target_bullet:list[Bullet] = []
+        self.target_bullets:list[Bullet] = []
         self.update_game_space()
         
     def update_game_space(self):
@@ -329,8 +387,8 @@ class Game:
         if self.agent_bullets is not None:
             for bullet in self.agent_bullets:
                 self.game_space[bullet.row][bullet.col] = 4
-        if self.target_bullet is not None:
-            for bullet in self.target_bullet:
+        if self.target_bullets is not None:
+            for bullet in self.target_bullets:
                 self.game_space[bullet.row][bullet.col] = 5
         
         # if agent, set to 1 or 14
@@ -364,35 +422,25 @@ class Game:
         # if key:
             
         # 1, move bullets first
-        if self.agent_bullets is not None:
+        if len(self.target_bullets) > 0:
             for a_b in self.agent_bullets:
-                a_b.bullet_move_result(self.game_space)
-        if self.target_bullet is not None:
-            for t_b in self.target_bullet:
-                t_b.bullet_move_result(self.game_space)
-        
-        # 2, check if anyone die
-        #     if self.agent_bullets is not None:
-        #         self.agent_bullets.move()
-        #         self.agent_bullets.draw(self.canvas, self.cell_size)
+                # print(a_b.row,a_b.col,a_b.direction,a_b.speed,a_b.owner)
+                result = a_b.bullet_move_result(self.game_space)
+                if (result == -1):# out of map
+                    self.agent_bullets.remove(a_b)
+                elif (result == 3):# agent kills target, end the game
+                    messagebox.showinfo("游戏结束", "target was killed!")
+                    self.root.quit()
+                    
+        if len(self.target_bullets) > 0:
+            for t_b in self.target_bullets:
+                result = t_b.bullet_move_result(self.game_space)
+                if (result == -1):# out of map
+                    self.target_bullets.remove(t_b)
+                elif (result == 2):# target kills agent, end the game
+                    messagebox.showinfo("游戏结束", "agent was killed!")
+                    self.root.quit()
 
-        #         if self.agent_bullets.row < 0 or self.agent_bullets.row >= self.height or self.agent_bullets.col < 0 or self.agent_bullets.col >= self.width:
-        #             self.agent_bullets = None
-        #         elif self.agent_bullets.row == self.target.row and self.agent_bullets.col == self.target.col:
-        #             messagebox.showinfo("游戏结束", "目标被击中！")
-        #             self.root.quit()
-
-        #     if self.target_bullet is not None:
-        #         self.target_bullet.move()
-        #         self.target_bullet.draw(self.canvas, self.cell_size)
-
-        #         if self.target_bullet.row < 0 or self.target_bullet.row >= self.height or self.target_bullet.col < 0 or self.target_bullet.col >= self.width:
-        #             self.target_bullet = None
-        #         elif self.target_bullet.row == self.agent.row and self.target_bullet.col == self.agent.col:
-        #             messagebox.showinfo("游戏结束", "代理被击中！")
-        #             self.root.quit()
-
-        
         
         
         
@@ -415,11 +463,11 @@ class Game:
         
         # 4, fire bullets
         self.agent_bullets.append(self.agent.fire_bullet())
-        self.target_bullet.append(self.target.fire_bullet())
+        self.target_bullets.append(self.target.fire_bullet())
         
         self.update_game_space()
             
-        print(self.game_space)  
+        # print(self.game_space)  
 
         self.draw()
 
