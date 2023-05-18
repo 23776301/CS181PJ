@@ -131,9 +131,7 @@ class TankSprite(BaseSprite):
         t = Thread(target=self.boom)
         t.start()
 
-
 class Hero(TankSprite):
-
     def __init__(self, image_name, screen):
         super(Hero, self).__init__(image_name, screen)
         self.type = Settings.HERO
@@ -211,7 +209,6 @@ class Enemy(TankSprite):
         shot_flag = random.choice([True] + [False]*59)
         if shot_flag:
             super().shot()
-    
     def keep_shot(self):
         super().shot()
         
@@ -247,7 +244,6 @@ class Enemy(TankSprite):
         if not self.life:
             t = Thread(target=self.boom)
             t.start()
-
 
 class Wall(BaseSprite):
 

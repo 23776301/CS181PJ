@@ -466,7 +466,7 @@ class TankWar:
             # print(next_direction,self.hero.rect.center)
             self.hero.is_moving = True
             # self.hero.is_hit_wall = False
-            # self.hero.update()
+            self.hero.update()
 
 
 
@@ -485,10 +485,10 @@ class TankWar:
             
             # Our AI hero
             # if pygame.time.get_ticks()% 1000 != 0:
-                # self.__AI_handler()
+            self.__AI_handler()
             
             # Player control hero by keyboard
-            self.__event_handler()
+            # self.__event_handler()
             
             # 3、碰撞监测
             self.__check_collide()
