@@ -36,7 +36,7 @@ class Game:
         self.game_coord = [[0 for _ in range(width)] for _ in range(height)]
         for row in range(height):
             for col in range(width):
-                self.set_random_game_coord(row,col,0.2)
+                self.set_random_game_coord(row,col,0.02)
 
 
         self.agent = Agent(0, 0)
@@ -82,6 +82,12 @@ class Game:
             self.game_coord[self.target.row][self.target.col] = 2
         
         # print(self.game_coord)
+    def check_collision(self):
+        if self.agent.row == self.target.row and self.agent.col == self.target.col:
+            self.score-=50
+            messagebox.showinfo("游戏结束", "agent hit target!")
+            self.root.quit()
+
 
     def draw(self):
         self.canvas.delete("all")  # 清空画布
@@ -106,7 +112,7 @@ class Game:
                     self.target_bullets.remove(t_b)
                 elif (result == 2):# target kills agent, end the game
                     self.score-=100
-                    messagebox.showinfo("游戏结束", "agent was killed!")
+                    messagebox.showinfo("游戏结束", "target was killed!")
                     self.root.quit()
                     
                     
@@ -127,6 +133,9 @@ class Game:
         
         #  use keyboard or AI to get action and move agent and target
 
+        self.target.make_action(self.agent,self.game_coord,self.agent_bullets)
+        self.check_collision()
+        
         if(USE_KEYBOARD):
             if key == "up":
                 self.agent.move("up", self.game_coord)
@@ -137,9 +146,9 @@ class Game:
             elif key == "right":
                 self.agent.move("right", self.game_coord)
         else:
-            self.agent.make_action(self.game_coord)
-            
-        self.target.make_action(self.game_coord)
+            self.agent.make_action(self.target,self.game_coord,self.target_bullets)
+
+        self.check_collision()
         self.score-=1
         
         

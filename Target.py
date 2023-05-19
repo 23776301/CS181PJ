@@ -62,14 +62,15 @@ class Target:
             return False  # 移动到非空单元格
         return True
     
-    def make_action(self, game_coord, angent_bullets, target_bullets):
+    def make_action(self, end,game_coord, angent_bullets):
         """
         决定目标的下一步移动方向
 
         Returns:
             str: 移动方向 ('up', 'down', 'left', 'right')
         """
-        self.move('up',game_coord)
+        action = greedy(self,end,game_coord, angent_bullets)
+        self.move(action,game_coord)
     def fire_bullet(self):
         """
         发射子弹

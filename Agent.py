@@ -16,7 +16,15 @@ class Agent:
         self.row = row
         self.col = col
         self.direction = 'down'
-
+        # 游戏空间：
+        # 0 = 空，
+        # 1 = 代理，
+        # 2 = 目标，
+        # 3 = 墙，
+        # 4 = 代理子弹，
+        # 5 = 目标子弹。
+        # 14 = 代理子弹+agent
+        # 25 = 目标子弹+target
     def move(self, direction, game_coord):
         self.direction = direction
         next_row, next_col = self.get_next_position(direction)
@@ -65,7 +73,7 @@ class Agent:
             return False  # 移动到非空单元格
         return True
 
-    def make_action(self, game_coord, angent_bullets, target_bullets):
+    def make_action(self, end,game_coord, target_bullets):
         """
         决定代理的下一步移动方向
 
@@ -91,7 +99,8 @@ class Agent:
             agent.move(agent.make_action(game_coord), game_coord)
                 
         """
-
+        action = greedy(self,end,game_coord, target_bullets)
+        self.move(action,game_coord)
                 
     def fire_bullet(self):
         """
