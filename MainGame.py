@@ -33,8 +33,9 @@ class Game:
 
         self.cell_size = size
         self.game_space = [[0 for _ in range(width)] for _ in range(height)]
-        self.game_space[2][2] = 3
-        
+        for row in range(height):
+            for col in range(width):
+                self.set_random_game_state(row,col,0.2)
 
 
         self.agent = Agent(0, 0)
@@ -46,10 +47,12 @@ class Game:
     def set_cell(self, row, col, value):
         self.game_space[row][col] = value
 
-    def set_random_game_state(self):
-        row = random.randint(0, self.height - 1)
-        col = random.randint(0, self.width - 1)
-        self.set_cell(row, col, 3)
+    # every cell has possibility P to be a wall
+    def set_random_game_state(self,row,col,P):
+        if random.random()<P:
+            self.set_cell(row,col,3)
+        else:
+            self.set_cell(row,col,0)
         
         
     def update_game_space(self):
