@@ -31,7 +31,7 @@ class Game:
         """
         self.width = width
         self.height = height
-
+        self.quit = False
         self.root = tk.Tk()
         self.root.title("射击游戏")
         self.score = 0
@@ -98,13 +98,15 @@ class Game:
     def check_collision(self):
         if self.agent.row == self.target.row and self.agent.col == self.target.col:
             self.score+=100
-            # messagebox.showinfo("游戏结束", 'Home protected successfully!')
+            messagebox.showinfo("游戏结束", 'Home protected successfully!')
             print(self.score)
+            self.quit = True
             self.root.quit()
         if self.target.row == 1 and self.target.col == 1:
             self.score-=100
             messagebox.showinfo("游戏结束", "home attacked!")
             print(self.score)
+            self.quit = True
             self.root.quit()
 
 
@@ -179,15 +181,17 @@ class Game:
         if agent_move_result == 'hit enemy':
             self.score += 100
             # messagebox.showinfo("游戏结束", agent_move_result)
-            messagebox.showinfo("游戏结束", 'Home protected successfully!')
+            # messagebox.showinfo("游戏结束", 'Home protected successfully!')
             print(self.score)
+            self.quit = True
             self.root.quit()
         # elif agent_move_result == "hit enemy's bullet":
         #     self.score -= 200
         #     messagebox.showinfo("游戏结束", agent_move_result)
         # print(self.score)    
         # self.root.quit()
-        
+        if (self.quit):
+            return
         
         # target 沿求得最短路径前进
         # npos = self.target_path_bfs[self.step]
@@ -202,13 +206,15 @@ class Game:
         if target_move_result == 'hit agent':
             self.score += 100
             # messagebox.showinfo("游戏结束", target_move_result)
-            messagebox.showinfo("游戏结束", 'Home protected successfully!')
+            # messagebox.showinfo("游戏结束", 'Home protected successfully!')
             print(self.score)
+            self.quit = True
             self.root.quit()
         elif target_move_result == "destory home!":
             self.score -= 100
-            messagebox.showinfo("游戏结束", target_move_result)
+            # messagebox.showinfo("游戏结束", target_move_result)
             print(self.score)
+            self.quit = True
             self.root.quit()
         # elif target_move_result == "hit agent's bullet":
         #     self.score += 200
@@ -255,7 +261,7 @@ class Game:
         event = tk.Event()
         event.keysym = 'space'
         self.key_press(event)
-        self.root.after(10, self.autokeyinput)
+        self.root.after(0, self.autokeyinput)
     def run_auto(self):
         """
         运行游戏
