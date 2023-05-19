@@ -14,7 +14,7 @@ from Bullet import *
 from Target import *
 from Cell import *
 
-USE_KEYBOARD = True
+USE_KEYBOARD = False
 
 class Game:
     def __init__(self, width, height, size):
@@ -85,7 +85,13 @@ class Game:
             self.game_coord[self.target.row][self.target.col] = 2
         
         # print(self.game_coord)
-        
+    # def check_collision(self):
+    #     if self.agent.row == self.target.row and self.agent.col == self.target.col:
+    #         self.score-=50
+    #         messagebox.showinfo("游戏结束", "agent hit target!")
+    #         self.root.quit()
+
+
     def draw(self):
         self.canvas.delete("all")  # 清空画布
 
@@ -109,8 +115,8 @@ class Game:
                     self.target_bullets.remove(t_b)
                 elif (result == 2):# target kills agent, end the game
                     self.score-=100
-                    # messagebox.showinfo("游戏结束", "agent was killed!")
-                    # self.root.quit()
+                    messagebox.showinfo("游戏结束", "agent was killed!")
+                    self.root.quit()
 
         if len(self.target_bullets) > 0:
             for a_b in self.agent_bullets:
@@ -120,8 +126,8 @@ class Game:
                     self.agent_bullets.remove(a_b)
                 elif (result == 3):# agent kills target, end the game
                     self.score+=100
-                    # messagebox.showinfo("游戏结束", "target was killed!")
-                    # self.root.quit()
+                    messagebox.showinfo("游戏结束", "target was killed!")
+                    self.root.quit()
         self.update_game_coord()
                     
 
@@ -135,10 +141,10 @@ class Game:
             self.score -= 100
             messagebox.showinfo("游戏结束", target_move_result)
             self.root.quit()
-        # elif target_move_result == "hit agent's bullet":
-        #     self.score += 200
-        #     messagebox.showinfo("游戏结束", target_move_result)
-        #     self.root.quit()
+        elif target_move_result == "hit agent's bullet":
+            self.score += 200
+            messagebox.showinfo("游戏结束", target_move_result)
+            self.root.quit()
         
         #  use AI or keyboard to get action and move agent
         if(USE_KEYBOARD):
@@ -159,10 +165,11 @@ class Game:
             self.score -= 100
             messagebox.showinfo("游戏结束", agent_move_result)
             self.root.quit()
-        # elif agent_move_result == "hit enemy's bullet":
-        #     self.score -= 200
-        #     messagebox.showinfo("游戏结束", agent_move_result)
-        #     self.root.quit()
+        elif agent_move_result == "hit enemy's bullet":
+            self.score -= 200
+            messagebox.showinfo("游戏结束", agent_move_result)
+            self.root.quit()
+        # self.check_collision()
         self.score-=1
         
         
