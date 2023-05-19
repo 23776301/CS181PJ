@@ -57,7 +57,7 @@ class Agent:
             # move towards target
             return "hit enemy"
 
-        elif game_coord[next_row][next_col] == 3:
+        elif game_coord[next_row][next_col] == 3 or game_coord[next_row][next_col] == 6:
             # hit wall, keep still
             return "hit wall"
 
@@ -88,7 +88,7 @@ class Agent:
             return self.row, self.col
 
     def make_action(self, end, game_coord, target_bullets):
-        action = greedy_random(self, end, game_coord, target_bullets)
+        action = BFS(self, end, game_coord, target_bullets)
         return self.move(action, game_coord)
 
     def fire_bullet(self,game_coord):

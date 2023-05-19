@@ -64,9 +64,9 @@ class Target:
             game_coord[self.row][self.col] = 2
             # abullet = self.fire_bullet(game_coord)
             # return abullet
-
             return "hit own bullet"
-
+        elif game_coord[next_row][next_col] == 6:
+            return "destory home!"
     def get_next_position(self, direction):
         if direction == "up":
             return self.row - 1, self.col
@@ -82,7 +82,8 @@ class Target:
             return self.row, self.col
 
     def make_action(self, end, game_coord, target_bullets):
-        action = BFS(self, end, game_coord, target_bullets)
+        # the first parameter is the caller target itself
+        action = Astar(self, end, game_coord, target_bullets)
         return self.move(action, game_coord)
 
     def fire_bullet(self,game_coord):

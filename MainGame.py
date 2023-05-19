@@ -4,7 +4,7 @@ from Target import *
 from Bullet import *
 from MainGame import *
 from Search import *
-
+from CollectScores import collect_score
 import tkinter as tk
 from tkinter import messagebox
 import random
@@ -14,7 +14,11 @@ from Bullet import *
 from Target import *
 from Cell import *
 
-USE_KEYBOARD = True
+# When set to False, you can press any key
+#       to see two AIs playing.
+#       NOTE that if you press and holding for too long,
+#       you will miss out many beautiful sights
+USE_KEYBOARD = False
 
 class Game:
     def __init__(self, width, height, size):
@@ -87,16 +91,20 @@ class Game:
             self.game_coord[self.target.row][self.target.col] = 25
         else:
             self.game_coord[self.target.row][self.target.col] = 2
+            
+        self.set_cell(1, 1, 6) # 设置我方大本营位置 again, in case it was overrided by bullets
         
         # print(self.game_coord)
     def check_collision(self):
         if self.agent.row == self.target.row and self.agent.col == self.target.col:
             self.score+=100
-            messagebox.showinfo("游戏结束", 'Home protected successfully!')
+            # messagebox.showinfo("游戏结束", 'Home protected successfully!')
+            print(self.score)
             self.root.quit()
         if self.target.row == 1 and self.target.col == 1:
             self.score-=100
             messagebox.showinfo("游戏结束", "home attacked!")
+            print(self.score)
             self.root.quit()
 
 
@@ -124,7 +132,8 @@ class Game:
                 # elif (result == 2):# target kills agent, end the game
                 #     self.score-=100
                 #     messagebox.showinfo("游戏结束", "agent was killed!")
-                #     self.root.quit()
+                # print(self.score)    
+                # self.root.quit()
                     
                     
         if len(self.target_bullets) > 0:
@@ -136,7 +145,8 @@ class Game:
                 # elif (result == 3):# agent kills target, end the game
                 #     self.score+=100
                 #     messagebox.showinfo("游戏结束", "target was killed!")
-                #     self.root.quit()
+                # print(self.score)    
+                # self.root.quit()
         self.update_game_coord()
                     
 
@@ -148,7 +158,8 @@ class Game:
         self.step += 1
 
         # 检查碰撞
-        # This actually doesn't work, if do not believe, 
+        # This actually doesn't work. If do not believe, 
+        #       comment off other "Home protected successfully!" adn related lines, to check whether the line below works
         self.check_collision()
         
         if(USE_KEYBOARD):
@@ -166,30 +177,44 @@ class Game:
             agent_move_result = self.agent.make_action(self.target,self.game_coord,self.target_bullets)
         # check move cause what
         if agent_move_result == 'hit enemy':
-            self.score -= 100
+            self.score += 100
             # messagebox.showinfo("游戏结束", agent_move_result)
             messagebox.showinfo("游戏结束", 'Home protected successfully!')
+            print(self.score)
             self.root.quit()
         # elif agent_move_result == "hit enemy's bullet":
         #     self.score -= 200
         #     messagebox.showinfo("游戏结束", agent_move_result)
-        #     self.root.quit()
+        # print(self.score)    
+        # self.root.quit()
+        
         
         # target 沿求得最短路径前进
         # npos = self.target_path_bfs[self.step]
         # self.target = Target(npos[0], npos[1])
         #  use AI to get action and move target
+        # NOTE NOTE: You can specify the make_action()'s start and end position,
+        #  while start do not need to pass into, 
+        #  because python class passes the caller class object itself as the default first parameter
         target_move_result = self.target.make_action(self.agentHome,self.game_coord,self.agent_bullets)
+        
         # check move cause what
         if target_move_result == 'hit agent':
-            self.score -= 100
+            self.score += 100
             # messagebox.showinfo("游戏结束", target_move_result)
             messagebox.showinfo("游戏结束", 'Home protected successfully!')
+            print(self.score)
+            self.root.quit()
+        elif target_move_result == "destory home!":
+            self.score -= 100
+            messagebox.showinfo("游戏结束", target_move_result)
+            print(self.score)
             self.root.quit()
         # elif target_move_result == "hit agent's bullet":
         #     self.score += 200
         #     messagebox.showinfo("游戏结束", target_move_result)
-        #     self.root.quit()
+        # print(self.score)    
+        # self.root.quit()
         
 
         self.check_collision()
@@ -225,8 +250,23 @@ class Game:
 
         self.root.bind("<KeyPress>", self.key_press)
         self.root.mainloop()
+    
+    def autokeyinput(self):
+        event = tk.Event()
+        event.keysym = 'space'
+        self.key_press(event)
+        self.root.after(10, self.autokeyinput)
+    def run_auto(self):
+        """
+        运行游戏
+        """
+        self.canvas = tk.Canvas(self.root, width=self.width * self.cell_size, height=self.height * self.cell_size)
+        self.canvas.pack()
 
+        self.draw()
+        self.autokeyinput()
+        self.root.mainloop()
 
 if __name__ == "__main__":
     game = Game(50, 30, 15)
-    game.run()
+    game.run_auto()

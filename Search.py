@@ -87,7 +87,7 @@ def BFS(start, end, game_coord, enemy_bullets):
 
         # Check if we reached the end position
         if position.row == end.row and position.col == end.col:
-            print("BFS tells you to go",path[0])
+            # print("BFS tells you to go",path[0])
             return path[0]  # Return the shortest path as a list of actions
 
         # Check if the current position is valid and not visited
@@ -135,7 +135,7 @@ def DFS(start, end, game_coord, enemy_bullets):
 
         # Check if we reached the end position
         if position.row == end.row and position.col == end.col:
-            print("DFS tells you to go",path[0])
+            # print("DFS tells you to go",path[0])
             return path[0]  # Return the path as a list of actions
 
         # Check if the current position is valid and not visited
@@ -232,7 +232,7 @@ def Astar(start,end,game_coord,enemy_bullets):
         if curr_position.row == end.row and curr_position.col == end.col:
             
             path = reconstruct_path(curr_node)  # Return the shortest path as a list of actions
-            print("Astar tells you to go",path[0])
+            # print("Astar tells you to go",path[0])
             return path[0]
         # Check if the current position is valid and not visited
         if (
