@@ -53,20 +53,20 @@ class Cell:
             canvas.create_rectangle(x1, y1, x2, y2, fill="black")
         elif self.cellstate==6:
             canvas.create_rectangle(x1, y1, x2, y2, fill="red")
-            
+
         elif self.cellstate==1:
             canvas.create_oval(x1, y1, x2, y2, fill="red")
         elif self.cellstate==2:
             canvas.create_oval(x1, y1, x2, y2, fill="blue")
-        elif self.cellstate==4:
-            canvas.create_oval(x3-cell_size/3, y3-cell_size/3, x3+cell_size/3, y3+cell_size/3, fill="red")
-        elif self.cellstate==5:
-            canvas.create_oval(x3-cell_size/3, y3-cell_size/3, x3+cell_size/3, y3+cell_size/3, fill="blue")
-        
+        # elif self.cellstate==4:
+        #     canvas.create_oval(x3-cell_size/6, y3-cell_size/6, x3+cell_size/6, y3+cell_size/6, fill="red")
+        # elif self.cellstate==5:
+        #     canvas.create_oval(x3-cell_size/6, y3-cell_size/6, x3+cell_size/6, y3+cell_size/6, fill="blue")
+
         elif self.cellstate==14:
             canvas.create_oval(x1, y1, x2, y2, fill="red")
-            canvas.create_oval(x3-cell_size/3, y3-cell_size/3, x3+cell_size/3, y3+cell_size/3, fill="red")
+            canvas.create_oval(x3-cell_size/6, y3-cell_size/6, x3+cell_size/6, y3+cell_size/6, fill="red")
         elif self.cellstate==25:
             canvas.create_oval(x1, y1, x2, y2, fill="blue")
-            canvas.create_oval(x3-cell_size/3, y3-cell_size/3, x3+cell_size/3, y3+cell_size/3, fill="blue")
+            canvas.create_oval(x3-cell_size/6, y3-cell_size/6, x3+cell_size/6, y3+cell_size/6, fill="blue")
         

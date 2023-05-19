@@ -31,7 +31,7 @@ class Agent:
     def move(self, direction, game_coord):
         self.direction = direction
         next_row, next_col = self.get_next_position(direction)
-        print("agent moving to",next_row, next_col, "state " , game_coord[next_row][next_col])
+        # print("agent moving to",next_row, next_col, "state " , game_coord[next_row][next_col])
         if (
             next_row < 0
             or next_row >= len(game_coord)
@@ -92,7 +92,7 @@ class Agent:
         return self.move(action, game_coord)
 
     def fire_bullet(self,game_coord):
-        print("agent fire at ", self.row, self.col, "direction ", self.direction, "state ", game_coord[self.row][self.col])
+        # print("agent fire at ", self.row, self.col, "direction ", self.direction, "state ", game_coord[self.row][self.col])
         """
         发射子弹
         """
