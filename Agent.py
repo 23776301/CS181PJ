@@ -17,11 +17,11 @@ class Agent:
         self.col = col
         self.direction = 'down'
 
-    def move(self, direction, game_space):
+    def move(self, direction, game_coord):
         self.direction = direction
         next_row, next_col = self.get_next_position(direction)
-        if self.is_valid_move(next_row, next_col, game_space):
-            game_space[next_row][next_col] = self.fire_bullet()
+        if self.is_valid_move(next_row, next_col, game_coord):
+            game_coord[next_row][next_col] = self.fire_bullet()
             self.row = next_row
             self.col = next_col
 
@@ -47,30 +47,30 @@ class Agent:
         else:
             return self.row, self.col
 
-    def is_valid_move(self, row, col, game_space):
+    def is_valid_move(self, row, col, game_coord):
         """
         检查移动是否有效
 
         Args:
             row (int): 目标位置的行
             col (int): 目标位置的列
-            game_space (List[List[int]]): 游戏空间的状态信息
+            game_coord (List[List[int]]): 游戏空间的状态信息
 
         Returns:
             bool: 是否是有效移动
         """
-        if row < 0 or row >= len(game_space) or col < 0 or col >= len(game_space[0]):
+        if row < 0 or row >= len(game_coord) or col < 0 or col >= len(game_coord[0]):
             return False  # 移动超出边界
-        if game_space[row][col] == 3:
+        if game_coord[row][col] == 3:
             return False  # 移动到非空单元格
         return True
 
-    def make_action(self, game_space):
+    def make_action(self, game_coord, angent_bullets, target_bullets):
         """
         决定代理的下一步移动方向
 
         Args:
-            game_space (List[List[int]]): 游戏空间的状态信息
+            game_coord (List[List[int]]): 游戏空间的状态信息
 
         Returns:
             str: 移动方向 ('up', 'down', 'left', 'right')
@@ -78,18 +78,17 @@ class Agent:
 
 
         Usage:
-            str = BFS(self.game_space)
-            str = DFS(self.game_space)
-            str = Astar(self.game_space)
-            str = greedy(self.game_space)
-            str = scaredConsiderEnemyBullets(self.game_space)
+            str = BFS(self.game_coord)
+            str = DFS(self.game_coord)
+            str = Astar(self.game_coord)
+            str = greedy(self.game_coord)
+            str = scaredConsiderEnemyBullets(self.game_coord)
             ...
             
             
         When finishing this, just pass str as the direction to move()
         Example:
-            agent.move(agent.make_action(game_space), game_space)
-            
+            agent.move(agent.make_action(game_coord), game_coord)
                 
         """
 
