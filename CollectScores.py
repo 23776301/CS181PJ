@@ -28,7 +28,7 @@ def run_game():
     #     print(f" {count+1}/{num_runs} jobs finished!", end="\r")
     return score
 
-def multi_thread_with_gui(num_runs):
+def multi_thread_without_gui(num_runs):
     scores = Parallel(n_jobs = 32)(delayed(run_game)() for _ in range(num_runs))
     print(scores)
     average_score = sum(scores) / len(scores)
@@ -37,4 +37,4 @@ def multi_thread_with_gui(num_runs):
 
 if __name__ == '__main__':
     # single_thread_with_gui(20)
-    multi_thread_with_gui(200)
+    multi_thread_without_gui(200)
