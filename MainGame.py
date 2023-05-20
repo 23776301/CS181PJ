@@ -13,7 +13,7 @@ from Agent import *
 from Bullet import *
 from Target import *
 from Cell import *
-
+import sys
 # When set to False, you can press any key
 #       to see two AIs playing.
 #       NOTE that if you press and holding for too long,
@@ -21,7 +21,7 @@ from Cell import *
 USE_KEYBOARD = False
 
 class Game:
-    def __init__(self, width, height, size):
+    def __init__(self, width, height, size, GUI_interval):
         """
         游戏的表示和状态信息
 
@@ -33,6 +33,12 @@ class Game:
         self.height = height
         self.quit = False
         self.root = tk.Tk()
+        self.GUI_interval = GUI_interval
+        # disable GUI
+        if GUI_interval == '0':
+            self.root.withdraw()
+        else:
+            self.GUI_interval = GUI_interval
         self.root.title("射击游戏")
         self.score = 0
         self.step = 0
@@ -42,8 +48,8 @@ class Game:
         for row in range(height):
             for col in range(width):
                 self.set_random_game_coord(row,col,0.05)
-        self.set_cell(1, 1, 6) # 设置我方大本营位置
-        self.agentHome = Position(1,1)
+        self.set_cell(1, round(self.width/3), 6) # 设置我方大本营位置
+        self.agentHome = Position(1,round(self.width/3))
         # print(self.game_coord)
         self.agent = Agent(0, 0)
         self.target = Target(height - 1, width - 1)
@@ -92,7 +98,9 @@ class Game:
         else:
             self.game_coord[self.target.row][self.target.col] = 2
             
-        self.set_cell(1, 1, 6) # 设置我方大本营位置 again, in case it was overrided by bullets
+            
+        self.set_cell(1, round(self.width/3), 6) # 设置我方大本营位置
+        # 设置我方大本营位置 again, in case it was overrided by bullets
         
         # print(self.game_coord)
     def check_collision(self):
@@ -261,7 +269,7 @@ class Game:
         event = tk.Event()
         event.keysym = 'space'
         self.key_press(event)
-        self.root.after(0, self.autokeyinput)
+        self.root.after(int(self.GUI_interval), self.autokeyinput)
     def run_auto(self):
         """
         运行游戏
@@ -274,5 +282,6 @@ class Game:
         self.root.mainloop()
 
 if __name__ == "__main__":
-    game = Game(50, 30, 15)
+    arg1 = int(sys.argv[1])
+    game = Game(50, 30, 15, arg1)
     game.run_auto()

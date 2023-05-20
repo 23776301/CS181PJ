@@ -95,7 +95,8 @@ def BFS(start, end, game_coord, enemy_bullets):
             0 <= position.row < rows and
             0 <= position.col < cols and
             not visited[position.row][position.col] and
-            game_coord[position.row][position.col] != 3
+            game_coord[position.row][position.col] != 3 and
+            game_coord[position.row][position.col] != 6
         ):
             # Mark the current position as visited
             visited[position.row][position.col] = True
@@ -143,7 +144,8 @@ def DFS(start, end, game_coord, enemy_bullets):
             0 <= position.row < rows and
             0 <= position.col < cols and
             not visited[position.row][position.col] and
-            game_coord[position.row][position.col] != 3
+            game_coord[position.row][position.col] != 3 and
+            game_coord[position.row][position.col] != 6
         ):
             # Mark the current position as visited
             visited[position.row][position.col] = True
@@ -239,7 +241,8 @@ def Astar(start,end,game_coord,enemy_bullets):
             0 <= curr_position.row < rows and
             0 <= curr_position.col < cols and
             not visited[curr_position.row][curr_position.col] and
-            game_coord[curr_position.row][curr_position.col] != 3
+            game_coord[curr_position.row][curr_position.col] != 3 and
+            game_coord[curr_position.row][curr_position.col] != 6
         ):
             # Mark the current position as visited
             visited[curr_position.row][curr_position.col] = True
