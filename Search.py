@@ -1,3 +1,5 @@
+import random
+
 from Cell import *
 from Agent import *
 from Target import *
@@ -19,6 +21,7 @@ from collections import deque
 # 25 = 目标子弹+target
 """
 MAX_VALUE = 0x7fffffff
+dist_th = 3
 def enemy_BFS(start,end,game_coord):
     n, m = len(game_coord), len(game_coord[0])
     dist = [[MAX_VALUE for _ in range(m)] for _ in range(n)] # 标记每个点在第几层被搜索
@@ -266,9 +269,62 @@ def Astar(start,end,game_coord,enemy_bullets):
 
     return "No path found"  # Return if no path is found
 
+def get_legal_actions(agent,game_coord):
+    legal_actions = []
+    rows = len(game_coord)
+    cols = len(game_coord[0])
+    movements = {'up': (-1, 0), 'down': (1, 0), 'left': (0, -1), 'right': (0, 1)}
+    for key, value in movements.items():
+
+        nx, ny = agent.row + value[0], agent.col + value[1]
+        if (
+                0 <= nx < rows and
+                0 <= ny < cols and
+                game_coord[nx][ny] != 3 and
+                game_coord[nx][ny] != 6
+        ):
+            legal_actions.append(key)
+    return legal_actions
+
+def avoid_red(blue,red,end,game_coord,enemy_bullets):
+    rows = len(game_coord)
+    cols = len(game_coord[0])
+    blue_to_end = calculate_manhattan_distance(blue, end)
+    red_to_end = calculate_manhattan_distance(red, end)
+    blue_to_red = calculate_manhattan_distance(blue,red)
+    movements = {'up': (-1, 0), 'down': (1, 0), 'left': (0, -1), 'right': (0, 1)}
+    if red_to_end > blue_to_end:
+        return Astar(blue,end,game_coord, enemy_bullets)
+    else:
+        if blue_to_red > 5:
+            legal_actions = get_legal_actions(blue,game_coord)
+            e = random.uniform(0,1)
+            if e < 0.1:
+                move = legal_actions[random.randint(0, len(legal_actions)-1)]
+            else:
+                move = Astar(blue, end, game_coord, enemy_bullets)
+            return move
+        else:
+            max_dist = float('-inf')
+            for key,value in movements.items():
+
+                nx, ny = blue.row + value[0], blue.col + value[1]
+                if (
+                        0 <= nx < rows and
+                        0 <= ny < cols and
+                        game_coord[nx][ny] != 3 and
+                        game_coord[nx][ny] != 6
+                ):
+                    dist = abs(nx - red.row) + abs(ny - red.col)
+                    if dist > max_dist:
+                        max_dist = dist
+                        best_move = key
+            print(best_move)
+            return best_move
+
 def greedy_random(start,end,game_coord,enemy_bullets):
     dx = start.col - end.col
-    dy = start.row - end.row
+    dy = start.row - end.rowlu
     if random.random()<0.5:
         if dx > 0:
             return 'left'

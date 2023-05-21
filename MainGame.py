@@ -47,7 +47,7 @@ class Game:
         self.game_coord = [[0 for _ in range(width)] for _ in range(height)]
         for row in range(height):
             for col in range(width):
-                self.set_random_game_coord(row,col,0.05)
+                self.set_random_game_coord(row,col,0.2)
         self.set_cell(1, round(self.width/3), 6) # 设置我方大本营位置
         self.agentHome = Position(1,round(self.width/3))
         # print(self.game_coord)
@@ -208,7 +208,7 @@ class Game:
         # NOTE NOTE: You can specify the make_action()'s start and end position,
         #  while start do not need to pass into, 
         #  because python class passes the caller class object itself as the default first parameter
-        target_move_result = self.target.make_action(self.agentHome,self.game_coord,self.agent_bullets)
+        target_move_result = self.target.make_action(self.agent,self.agentHome,self.game_coord,self.agent_bullets)
         
         # check move cause what
         if target_move_result == 'hit agent':
@@ -270,6 +270,7 @@ class Game:
         event.keysym = 'space'
         self.key_press(event)
         self.root.after(int(self.GUI_interval), self.autokeyinput)
+
     def run_auto(self):
         """
         运行游戏

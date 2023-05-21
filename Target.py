@@ -81,9 +81,10 @@ class Target:
         else:  # no direction ?
             return self.row, self.col
 
-    def make_action(self, end, game_coord, target_bullets):
+    def make_action(self, agent, end, game_coord, target_bullets):
         # the first parameter is the caller target itself
-        action = Astar(self, end, game_coord, target_bullets)
+        #action = Astar(self, end, game_coord, target_bullets)
+        action = avoid_red(self,agent,end,game_coord,target_bullets)
         return self.move(action, game_coord)
 
     def fire_bullet(self,game_coord):
