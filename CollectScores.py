@@ -36,5 +36,5 @@ def multi_thread_without_gui(num_runs):
     return scores
 
 if __name__ == '__main__':
-    # single_thread_with_gui(20)
-    multi_thread_without_gui(200)
+    single_thread_with_gui(20)
+    # multi_thread_without_gui(200)

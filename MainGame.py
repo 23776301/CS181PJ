@@ -193,7 +193,7 @@ class Game:
             else:
                 agent_move_result = self.agent.move(None, self.game_coord)
         else:
-            agent_move_result = self.agent.make_action(self.target,self.game_coord,self.target_bullets)
+            agent_move_result = self.agent.make_action(self.target,self.agentHome,self.game_coord,self.target_bullets)
         # check move cause what
         if agent_move_result == 'hit enemy':
             self.score += 100

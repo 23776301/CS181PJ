@@ -65,8 +65,17 @@ class Position:
     def __init__(self, row, col):
         self.row = row
         self.col = col
-        
-from collections import deque
+
+def calculate_next_pos_using_action(someone,action):
+    if action == 'up':
+        return Position(someone.row-1,someone.col)
+    elif action == 'down':
+        return Position(someone.row+1,someone.col)
+    elif action == 'left':
+        return Position(someone.row,someone.col-1)
+    elif action == 'right':
+        return Position(someone.row,someone.col+1)
+
 
 def BFS(start, end, game_coord, enemy_bullets):
     queue = deque([(start, [])])  # Queue to store positions and corresponding paths
@@ -91,7 +100,7 @@ def BFS(start, end, game_coord, enemy_bullets):
         # Check if we reached the end position
         if position.row == end.row and position.col == end.col:
             # print("BFS tells you to go",path[0])
-            return path[0]  # Return the shortest path as a list of actions
+            return path  # Return the shortest path as a list of actions
 
         # Check if the current position is valid and not visited
         if (
@@ -140,7 +149,7 @@ def DFS(start, end, game_coord, enemy_bullets):
         # Check if we reached the end position
         if position.row == end.row and position.col == end.col:
             # print("DFS tells you to go",path[0])
-            return path[0]  # Return the path as a list of actions
+            return path  # Return the path as a list of actions
 
         # Check if the current position is valid and not visited
         if (
@@ -238,7 +247,7 @@ def Astar(start,end,game_coord,enemy_bullets):
             
             path = reconstruct_path(curr_node)  # Return the shortest path as a list of actions
             # print("Astar tells you to go",path[0])
-            return path[0]
+            return path
         # Check if the current position is valid and not visited
         if (
             0 <= curr_position.row < rows and
@@ -302,7 +311,7 @@ def avoid_red(blue,red,end,game_coord,enemy_bullets):
             if e < 0.1:
                 move = legal_actions[random.randint(0, len(legal_actions)-1)]
             else:
-                move = Astar(blue, end, game_coord, enemy_bullets)
+                move = Astar(blue, end, game_coord, enemy_bullets)[0]
             return move
         else:
             max_dist = float('-inf')
@@ -340,3 +349,20 @@ def scaredConsiderEnemyBullets(start,end,game_coord,enemy_bullets):
     pass
 def braveConsiderEnemyBullets(start,end,game_coord,enemy_bullets):
     pass
+
+def Agent_already_konw_target_will_perform_optimal(agent, target, agentHome, game_coord, enemy_bullets):
+    target_actions = BFS(target, agentHome, game_coord, enemy_bullets)
+    # print("target actions:",target_actions)
+    steps = 0
+    current_position = target
+    for action in target_actions:
+        steps+=1
+        current_position = calculate_next_pos_using_action(current_position,action)
+        agent_actions = BFS(agent, current_position, game_coord, enemy_bullets)
+        # print("going to (",current_position.row,current_position.col,"\nagent actions=",agent_actions,"\nsteps=",steps)
+        if len(agent_actions) == steps:
+            # print(" OK! Agent get blocking way = ",agent_actions[0])
+            return agent_actions[0]
+    # if can't find optimal block way, try to approch home first
+    # print('No! Agent moving towards home!')
+    return BFS(agent, agentHome, game_coord, enemy_bullets)[0]

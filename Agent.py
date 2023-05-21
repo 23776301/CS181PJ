@@ -92,8 +92,8 @@ class Agent:
         else:  # no direction ?
             return self.row, self.col
 
-    def make_action(self, end, game_coord, target_bullets):
-        action = BFS(self, end, game_coord, target_bullets)
+    def make_action(self, end, home,game_coord, target_bullets):
+        action = Agent_already_konw_target_will_perform_optimal(self,end,home,game_coord,target_bullets)
         return self.move(action, game_coord)
 
     def fire_bullet(self,game_coord):
