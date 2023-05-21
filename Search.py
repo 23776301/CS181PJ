@@ -319,7 +319,7 @@ def avoid_red(blue,red,end,game_coord,enemy_bullets):
                     if dist > max_dist:
                         max_dist = dist
                         best_move = key
-            print(best_move)
+            # print(best_move)
             return best_move
 
 def greedy_random(start,end,game_coord,enemy_bullets):

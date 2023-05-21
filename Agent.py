@@ -71,6 +71,11 @@ class Agent:
 
         elif game_coord[next_row][next_col] == 5:
             # agent killed by target bullet
+            self.row = next_row
+            self.col = next_col
+            game_coord[self.row][self.col] = 1
+            # abullet = self.fire_bullet(game_coord)
+            # return abullet
             return "hit enemy's bullet"
 
     def get_next_position(self, direction):

@@ -56,6 +56,9 @@ class Target:
             return "hit wall"
 
         elif game_coord[next_row][next_col] == 4:
+            self.row = next_row
+            self.col = next_col
+            game_coord[self.row][self.col] = 2
             return "hit agent's bullet"
 
         elif game_coord[next_row][next_col] == 5:

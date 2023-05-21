@@ -9,10 +9,10 @@ def single_thread_with_gui(num_runs):
     scores = []
     for count in range(num_runs):            
         output_score = subprocess.check_output(['python', 'MainGame.py', '1']) # set zero to disable gui
+        print(f" {count+1}/{num_runs} jobs finished! output = ",output_score.decode().strip())
         score = int(output_score.decode().strip())
         scores.append(score)
         # print(f" {count+1}/{num_runs} jobs finished!", end="\r")
-        print(f" {count+1}/{num_runs} jobs finished! score = ",score)
     average_score = sum(scores) / len(scores)
     print("average score:", average_score)
     print("scores[%d]:" % count)
@@ -20,7 +20,7 @@ def single_thread_with_gui(num_runs):
     return scores
 
 def run_game():
-    output_score = subprocess.check_output(['python', 'MainGame.py', '0']) # set zero to disable gui
+    output_score = subprocess.check_output(['python', 'MainGame.py', '1']) # set zero to disable gui
     score = int(output_score.decode().strip())
     # if count == num_runs - 1:
     #     print(f" {count+1}/{num_runs} jobs finished!")
@@ -29,8 +29,8 @@ def run_game():
     return score
 
 def multi_thread_without_gui(num_runs):
-    scores = Parallel(n_jobs = 32)(delayed(run_game)() for _ in range(num_runs))
-    print(scores)
+    scores = Parallel(n_jobs = 8)(delayed(run_game)() for _ in range(num_runs))
+    # print(scores)
     average_score = sum(scores) / len(scores)
     print("average score:", average_score)
     return scores

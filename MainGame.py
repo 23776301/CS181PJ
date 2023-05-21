@@ -39,15 +39,13 @@ class Game:
             self.root.withdraw()
         else:
             self.GUI_interval = GUI_interval
-        self.root.title("射击游戏")
+        self.root.title(" Defend Our Home ! ")
         self.score = 0
         self.step = 0
 
         self.cell_size = size
         self.game_coord = [[0 for _ in range(width)] for _ in range(height)]
-        for row in range(height):
-            for col in range(width):
-                self.set_random_game_coord(row,col,0.2)
+
         self.set_cell(1, round(self.width/3), 6) # 设置我方大本营位置
         self.agentHome = Position(1,round(self.width/3))
         # print(self.game_coord)
@@ -55,8 +53,12 @@ class Game:
         self.target = Target(height - 1, width - 1)
         # self.target_path_bfs = enemy_BFS(self.target, (1, 1), self.game_coord) # 假设敌方坦克会根据bfs找到袭击的最短路径，该路径存储在列表中
         # print(self.target_path_bfs)
+                
         self.agent_bullets:list[Bullet] = []
-        self.target_bullets:list[Bullet] = []
+        self.target_bullets:list[Bullet] = []        
+        for row in range(height):
+            for col in range(width):
+                self.set_random_game_coord(row,col,0.15)
         self.update_game_coord()
         
     def set_cell(self, row, col, value):
@@ -68,8 +70,15 @@ class Game:
             self.set_cell(row,col,3)
         else:
             self.set_cell(row,col,0)
+        if self.check_valid_coord() == False:
+            self.set_random_game_coord(row,col,P)
         
-        
+    def check_valid_coord(self):
+        if BFS(self.agent, self.target, self.game_coord, self.target_bullets) == "No path found":
+            return False
+        if BFS(self.target, self.agentHome, self.game_coord, self.agent_bullets) == "No path found":
+            return False
+        return True
     def update_game_coord(self):
         # print("\nagent bullet\n",self.agent_bullets,"\ntarget_bullets\n",self.target_bullets)
         # if not wall, clear to 0
@@ -106,13 +115,13 @@ class Game:
     def check_collision(self):
         if self.agent.row == self.target.row and self.agent.col == self.target.col:
             self.score+=100
-            messagebox.showinfo("游戏结束", 'Home protected successfully!')
+            messagebox.showinfo("Game Ends!", 'Home protected successfully!')
             print(self.score)
             self.quit = True
             self.root.quit()
         if self.target.row == 1 and self.target.col == 1:
             self.score-=100
-            messagebox.showinfo("游戏结束", "home attacked!")
+            messagebox.showinfo("Game Ends!", "home attacked!")
             print(self.score)
             self.quit = True
             self.root.quit()
@@ -141,7 +150,7 @@ class Game:
                     self.target_bullets.remove(t_b)
                 # elif (result == 2):# target kills agent, end the game
                 #     self.score-=100
-                #     messagebox.showinfo("游戏结束", "agent was killed!")
+                #     messagebox.showinfo("Game Ends!", "agent was killed!")
                 # print(self.score)    
                 # self.root.quit()
                     
@@ -154,7 +163,7 @@ class Game:
                     self.agent_bullets.remove(a_b)
                 # elif (result == 3):# agent kills target, end the game
                 #     self.score+=100
-                #     messagebox.showinfo("游戏结束", "target was killed!")
+                #     messagebox.showinfo("Game Ends!", "target was killed!")
                 # print(self.score)    
                 # self.root.quit()
         self.update_game_coord()
@@ -188,14 +197,14 @@ class Game:
         # check move cause what
         if agent_move_result == 'hit enemy':
             self.score += 100
-            # messagebox.showinfo("游戏结束", agent_move_result)
-            # messagebox.showinfo("游戏结束", 'Home protected successfully!')
+            # messagebox.showinfo("Game Ends!", agent_move_result)
+            # messagebox.showinfo("Game Ends!", 'Home protected successfully!')
             print(self.score)
             self.quit = True
             self.root.quit()
         # elif agent_move_result == "hit enemy's bullet":
         #     self.score -= 200
-        #     messagebox.showinfo("游戏结束", agent_move_result)
+        #     messagebox.showinfo("Game Ends!", agent_move_result)
         # print(self.score)    
         # self.root.quit()
         if (self.quit):
@@ -213,20 +222,20 @@ class Game:
         # check move cause what
         if target_move_result == 'hit agent':
             self.score += 100
-            # messagebox.showinfo("游戏结束", target_move_result)
-            # messagebox.showinfo("游戏结束", 'Home protected successfully!')
+            # messagebox.showinfo("Game Ends!", target_move_result)
+            # messagebox.showinfo("Game Ends!", 'Home protected successfully!')
             print(self.score)
             self.quit = True
             self.root.quit()
         elif target_move_result == "destory home!":
             self.score -= 100
-            # messagebox.showinfo("游戏结束", target_move_result)
+            # messagebox.showinfo("Game Ends!", target_move_result)
             print(self.score)
             self.quit = True
             self.root.quit()
         # elif target_move_result == "hit agent's bullet":
         #     self.score += 200
-        #     messagebox.showinfo("游戏结束", target_move_result)
+        #     messagebox.showinfo("Game Ends!", target_move_result)
         # print(self.score)    
         # self.root.quit()
         

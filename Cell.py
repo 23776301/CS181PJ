@@ -58,10 +58,10 @@ class Cell:
             canvas.create_oval(x1, y1, x2, y2, fill="red")
         elif self.cellstate==2:
             canvas.create_oval(x1, y1, x2, y2, fill="blue")
-        # elif self.cellstate==4:
-        #     canvas.create_oval(x3-cell_size/6, y3-cell_size/6, x3+cell_size/6, y3+cell_size/6, fill="red")
-        # elif self.cellstate==5:
-        #     canvas.create_oval(x3-cell_size/6, y3-cell_size/6, x3+cell_size/6, y3+cell_size/6, fill="blue")
+        elif self.cellstate==4:
+            canvas.create_oval(x3-cell_size/6, y3-cell_size/6, x3+cell_size/6, y3+cell_size/6, fill="red")
+        elif self.cellstate==5:
+            canvas.create_oval(x3-cell_size/6, y3-cell_size/6, x3+cell_size/6, y3+cell_size/6, fill="blue")
 
         elif self.cellstate==14:
             canvas.create_oval(x1, y1, x2, y2, fill="red")
