@@ -407,3 +407,27 @@ def Agent_already_konw_target_will_perform_optimal(agent, target, agentHome, gam
     # if can't find optimal block way, try to approch home first
     # print('No! Agent moving towards home!')
     return BFS(agent, agentHome, game_coord, enemy_bullets)[0]
+
+def Agent_save_home(agent, target, agentHome, game_coord, enemy_bullets):
+    # 在基地附近巡逻
+    red_to_end = calculate_manhattan_distance(agent, agentHome)
+    if red_to_end > 5:
+        return Astar(agent,agentHome, game_coord, enemy_bullets)[0]
+    else:
+        target_actions = BFS(target, agentHome, game_coord, enemy_bullets)
+        # print("target actions:",target_actions)
+        steps = 0
+        current_position = Position(target.row,target.col)
+        for action in target_actions:
+            # print()
+            steps+=1
+            tmp = calculate_next_pos_using_action(current_position,action)
+            current_position = Position(tmp.row,tmp.col)
+            agent_actions = BFS(agent, current_position, game_coord, enemy_bullets)
+            # print("going to (",current_position.row,current_position.col,"\nagent actions=",agent_actions,"\nsteps=",steps)
+            if len(agent_actions) == steps:
+                # print(" OK! Agent get blocking way = ",agent_actions[0])
+                return agent_actions[0]
+        # if can't find optimal block way, try to approch home first
+        # print('No! Agent moving towards home!')
+    #return BFS(agent, agentHome, game_coord, enemy_bullets)[0]
