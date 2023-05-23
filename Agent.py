@@ -94,7 +94,8 @@ class Agent:
 
     def make_action(self, end, home,game_coord, target_bullets):
         # action = BFS(self,end,game_coord,target_bullets)[0] # use for random target1
-        action = Agent_already_konw_target_will_perform_optimal(self,end,home,game_coord,target_bullets) # use for target2, and first half of target3
+        # action = Agent_already_konw_target_will_perform_optimal(self,end,home,game_coord,target_bullets) # use for target2, and first half of target3
+        action = Agent_save_home(self,end,home,game_coord,target_bullets)
         return self.move(action, game_coord)
 
     def make_action_less_time_left(self, end, home,game_coord, target_bullets):
