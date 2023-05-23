@@ -37,8 +37,8 @@ def multi_thread_without_gui(num_runs, num_cut):
     return average_score
 
 if __name__ == '__main__':
-    num_cuts = range(1, 100,10)
-    average_scores = Parallel(n_jobs=4)(delayed(multi_thread_without_gui)(20, num_cut) for num_cut in num_cuts)
+    num_cuts = range(1, 100,2)
+    average_scores = Parallel(n_jobs=8)(delayed(multi_thread_without_gui)(200, num_cut) for num_cut in num_cuts)
 
     # Plotting the curve
     plt.plot(num_cuts, average_scores)

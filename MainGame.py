@@ -71,10 +71,13 @@ class Game:
             self.set_cell(row,col,3)
         else:
             self.set_cell(row,col,0)
+        self.update_game_coord()
         if self.check_valid_coord() == False:
             self.set_random_game_coord(row,col,P)
         
     def check_valid_coord(self):
+        # print(BFS(self.agent, self.target, self.game_coord, self.target_bullets))
+        # print(BFS(self.target, self.agentHome, self.game_coord, self.agent_bullets))
         if BFS(self.agent, self.target, self.game_coord, self.target_bullets) == "No path found":
             return False
         if BFS(self.target, self.agentHome, self.game_coord, self.agent_bullets) == "No path found":
