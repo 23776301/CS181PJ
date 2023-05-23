@@ -44,5 +44,5 @@ if __name__ == '__main__':
     plt.plot(num_cuts, average_scores)
     plt.xlabel('num_cut')
     plt.ylabel('Average Score')
-    plt.title('Average Score vs. num_cut')
+    plt.title('Average Score on each num_cut')
     plt.show()
