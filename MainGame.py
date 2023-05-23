@@ -197,7 +197,7 @@ class Game:
                 agent_move_result = self.agent.make_action_less_time_left(self.target,self.agentHome,self.game_coord,self.target_bullets)
         # check move cause what
         if agent_move_result == 'hit enemy':
-            self.score += 100
+            self.score += 300
             # messagebox.showinfo("Game Ends!", agent_move_result)
             # messagebox.showinfo("Game Ends!", 'Home protected successfully!')
             print(self.score)
@@ -209,7 +209,7 @@ class Game:
         # print(self.score)    
         # self.root.quit()
 
-        if self.score <= -100:
+        if (self.score <= -100) or (self.step > 250):
             print(self.score)
             self.quit = True
             self.root.quit()
@@ -222,21 +222,24 @@ class Game:
         # NOTE NOTE: You can specify the make_action()'s start and end position,
         #  while start do not need to pass into, 
         #  because python class passes the caller class object itself as the default first parameter
-        if self.score > -50:
+
+        if self.score > 50:
             target_move_result = self.target.make_action(self.agent,self.agentHome,self.game_coord,self.agent_bullets)
         else:
             target_move_result = self.target.make_action_less_time_left(self.agent,self.agentHome,self.game_coord,self.target_bullets)
+
         # print(target_move_result)
         # check move cause what
         if target_move_result == 'hit agent':
-            self.score += 100
+            self.score += 300
+            self.score += (250 - self.step) * 0.5
             # messagebox.showinfo("Game Ends!", target_move_result)
             # messagebox.showinfo("Game Ends!", 'Home protected successfully!')
             print(self.score)
             self.quit = True
             self.root.quit()
         elif target_move_result == "destory home!":
-            self.score -= 100
+            self.score -= 300
             # messagebox.showinfo("Game Ends!", target_move_result)
             print(self.score)
             self.quit = True
@@ -249,7 +252,7 @@ class Game:
         
 
         self.check_collision()
-        self.score-=1
+        self.score += 0.5 # 守住家时间越长，得分越高
         
         
         
@@ -257,12 +260,12 @@ class Game:
         # 4, fire bullets
         # print("agent_move_result",agent_move_result)
         # print("target_move_result",target_move_result)
-        agent_fire_result = agent_move_result
-        if type(agent_fire_result) == Bullet:
-            self.agent_bullets.append(agent_fire_result)
-        target_fire_result = target_move_result
-        if type(target_fire_result) == Bullet:
-            self.target_bullets.append(target_fire_result)
+        #agent_fire_result = agent_move_result
+        #if type(agent_fire_result) == Bullet:
+        #    self.agent_bullets.append(agent_fire_result)
+        #target_fire_result = target_move_result
+        #if type(target_fire_result) == Bullet:
+        #    self.target_bullets.append(target_fire_result)
         
         self.update_game_coord()
             
