@@ -5,11 +5,11 @@ import matplotlib.pyplot as plt
 def collect_score(score, scores):
     scores.append(score)
 
-def single_thread_with_gui(num_runs):
+def single_thread_with_gui(num_runs,num_cut):
     scores = []
     for count in range(num_runs):            
-        output_score = subprocess.check_output(['python', 'MainGame.py', '0']) # set zero to disable gui
-        print(f" {count+1}/{num_runs} jobs finished! output = ",output_score.decode().strip())
+        output_score = subprocess.check_output(['python', 'MainGame.py', '1',str(num_cut)]) # set zero to disable gui
+        print(f" {count+1}/{num_runs} jobs finished! score = ",output_score.decode().strip())
         score = int(output_score.decode().strip())
         scores.append(score)
         # print(f" {count+1}/{num_runs} jobs finished!", end="\r")
@@ -27,25 +27,30 @@ def run_game(num_cut):
     #     print(f" {count+1}/{num_runs} jobs finished!")
     # else:
     #     print(f" {count+1}/{num_runs} jobs finished!", end="\r")
+    # print(f"cut = {num_cut}, score = {score}")
     return score
 
 def multi_thread_without_gui(num_runs, num_cut):
-    scores = Parallel(n_jobs = 32)(delayed(run_game)(num_cut) for _ in range(num_runs))
+    scores = Parallel(n_jobs = 30)(delayed(run_game)(num_cut) for _ in range(num_runs))
     # print(scores)
     average_score = sum(scores) / len(scores)
     print(f"num_cut = {num_cut}, average score = {average_score}.")
     return average_score
-
-if __name__ == '__main__':
-    num_cuts = range(31, 100,2)
-    average_scores = Parallel(n_jobs=2)(delayed(multi_thread_without_gui)(200, num_cut) for num_cut in num_cuts)
-
+def multi_plot():    
+    num_cuts = range(1, 100,3)
+    average_scores = Parallel(n_jobs=2)(delayed(multi_thread_without_gui)(100, num_cut) for num_cut in num_cuts)
     # Plotting the curve
     plt.plot(num_cuts, average_scores)
     plt.xlabel('num_cut')
     plt.ylabel('Average Score')
     plt.title('Average Score on each num_cut')
     plt.show()
+    
+if __name__ == '__main__':
+    # single_thread_with_gui(20,20)
+    multi_plot()
+    
+
     
     
 # num_cut = 1, average score = -8.82.

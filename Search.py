@@ -297,7 +297,7 @@ def avoid_red(blue,red,end,game_coord,enemy_bullets):
     if red_to_end > blue_to_end:
         return Astar(blue,end,game_coord, enemy_bullets)
     else:
-        if blue_to_red > 5:
+        if blue_to_red >=6:
             legal_actions = get_legal_actions(blue,game_coord)
             e = random.uniform(0,1)
             if e < 0.1:
@@ -332,7 +332,7 @@ def avoid_red_brave(blue,red,end,game_coord,enemy_bullets):
     if red_to_end > blue_to_end:
         return Astar(blue,end,game_coord, enemy_bullets)
     else:
-        if blue_to_red > 2:
+        if blue_to_red >=2:
             legal_actions = get_legal_actions(blue,game_coord)
             e = random.uniform(0,1)
             if e < 0.1:
