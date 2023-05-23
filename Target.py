@@ -48,6 +48,9 @@ class Target:
 
         elif game_coord[next_row][next_col] == 1:
             return "hit agent"
+        
+        elif game_coord[next_row][next_col] == 14:
+            return "hit agent"
 
         elif game_coord[next_row][next_col] == 2:
             return "impolite scene"
@@ -85,11 +88,15 @@ class Target:
             return self.row, self.col
 
     def make_action(self, agent, end, game_coord, target_bullets):
-        # the first parameter is the caller target itself
-        #action = Astar(self, end, game_coord, target_bullets)
-        action = avoid_red(self,agent,end,game_coord,target_bullets)
+        # action =  random_action() # targer1, random
+        # action = BFS(self, end, game_coord, target_bullets)[0]
+        action = avoid_red(self,agent,end,game_coord,target_bullets) # target3, optimal but scared
         return self.move(action, game_coord)
-
+    def make_action_less_time_left(self, agent, end, game_coord, target_bullets):
+        # action =  random_action() # targer1, random
+        # action = BFS(self, end, game_coord, target_bullets)[0]
+        action = avoid_red_brave(self,agent,end,game_coord,target_bullets)
+        return self.move(action, game_coord)
     def fire_bullet(self,game_coord):
         """
         发射子弹

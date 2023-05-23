@@ -65,16 +65,8 @@ class Position:
     def __init__(self, row, col):
         self.row = row
         self.col = col
-
-def calculate_next_pos_using_action(someone,action):
-    if action == 'up':
-        return Position(someone.row-1,someone.col)
-    elif action == 'down':
-        return Position(someone.row+1,someone.col)
-    elif action == 'left':
-        return Position(someone.row,someone.col-1)
-    elif action == 'right':
-        return Position(someone.row,someone.col+1)
+def random_action():
+    return random.choice(['up', 'down', 'left', 'right'])
 
 
 def BFS(start, end, game_coord, enemy_bullets):
@@ -330,7 +322,41 @@ def avoid_red(blue,red,end,game_coord,enemy_bullets):
                         best_move = key
             # print(best_move)
             return best_move
+def avoid_red_brave(blue,red,end,game_coord,enemy_bullets):
+    rows = len(game_coord)
+    cols = len(game_coord[0])
+    blue_to_end = calculate_manhattan_distance(blue, end)
+    red_to_end = calculate_manhattan_distance(red, end)
+    blue_to_red = calculate_manhattan_distance(blue,red)
+    movements = {'up': (-1, 0), 'down': (1, 0), 'left': (0, -1), 'right': (0, 1)}
+    if red_to_end > blue_to_end:
+        return Astar(blue,end,game_coord, enemy_bullets)
+    else:
+        if blue_to_red > 2:
+            legal_actions = get_legal_actions(blue,game_coord)
+            e = random.uniform(0,1)
+            if e < 0.1:
+                move = legal_actions[random.randint(0, len(legal_actions)-1)]
+            else:
+                move = Astar(blue, end, game_coord, enemy_bullets)[0]
+            return move
+        else:
+            max_dist = float('-inf')
+            for key,value in movements.items():
 
+                nx, ny = blue.row + value[0], blue.col + value[1]
+                if (
+                        0 <= nx < rows and
+                        0 <= ny < cols and
+                        game_coord[nx][ny] != 3 and
+                        game_coord[nx][ny] != 6
+                ):
+                    dist = abs(nx - red.row) + abs(ny - red.col)
+                    if dist > max_dist:
+                        max_dist = dist
+                        best_move = key
+            # print(best_move)
+            return best_move
 def greedy_random(start,end,game_coord,enemy_bullets):
     dx = start.col - end.col
     dy = start.row - end.rowlu
@@ -350,14 +376,29 @@ def scaredConsiderEnemyBullets(start,end,game_coord,enemy_bullets):
 def braveConsiderEnemyBullets(start,end,game_coord,enemy_bullets):
     pass
 
+
+def calculate_next_pos_using_action(someone,action):
+    if action == 'up':
+        return Position(someone.row-1,someone.col)
+    elif action == 'down':
+        return Position(someone.row+1,someone.col)
+    elif action == 'left':
+        return Position(someone.row,someone.col-1)
+    elif action == 'right':
+        return Position(someone.row,someone.col+1)
+    else:
+        return Position(someone.row,someone.col)
+    
 def Agent_already_konw_target_will_perform_optimal(agent, target, agentHome, game_coord, enemy_bullets):
     target_actions = BFS(target, agentHome, game_coord, enemy_bullets)
     # print("target actions:",target_actions)
     steps = 0
-    current_position = target
+    current_position = Position(target.row,target.col)
     for action in target_actions:
+        # print()
         steps+=1
-        current_position = calculate_next_pos_using_action(current_position,action)
+        tmp = calculate_next_pos_using_action(current_position,action)
+        current_position = Position(tmp.row,tmp.col)
         agent_actions = BFS(agent, current_position, game_coord, enemy_bullets)
         # print("going to (",current_position.row,current_position.col,"\nagent actions=",agent_actions,"\nsteps=",steps)
         if len(agent_actions) == steps:

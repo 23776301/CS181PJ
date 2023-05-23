@@ -21,7 +21,7 @@ import sys
 USE_KEYBOARD = False
 
 class Game:
-    def __init__(self, width, height, size, GUI_interval):
+    def __init__(self, width, height, size, GUI_interval, cut):
         """
         游戏的表示和状态信息
 
@@ -29,6 +29,7 @@ class Game:
             width (int): 游戏的宽度（列数）
             height (int): 游戏的高度（行数）
         """
+        self.cut = cut
         self.width = width
         self.height = height
         self.quit = False
@@ -58,7 +59,7 @@ class Game:
         self.target_bullets:list[Bullet] = []        
         for row in range(height):
             for col in range(width):
-                self.set_random_game_coord(row,col,0.15)
+                self.set_random_game_coord(row,col,0.2)
         self.update_game_coord()
         
     def set_cell(self, row, col, value):
@@ -167,12 +168,6 @@ class Game:
                 # print(self.score)    
                 # self.root.quit()
         self.update_game_coord()
-                    
-
-        
-        
-
-
 
         self.step += 1
 
@@ -193,7 +188,10 @@ class Game:
             else:
                 agent_move_result = self.agent.move(None, self.game_coord)
         else:
-            agent_move_result = self.agent.make_action(self.target,self.agentHome,self.game_coord,self.target_bullets)
+            if self.score > - self.cut:
+                agent_move_result = self.agent.make_action(self.target,self.agentHome,self.game_coord,self.target_bullets)
+            else:
+                agent_move_result = self.agent.make_action_less_time_left(self.target,self.agentHome,self.game_coord,self.target_bullets)
         # check move cause what
         if agent_move_result == 'hit enemy':
             self.score += 100
@@ -207,9 +205,13 @@ class Game:
         #     messagebox.showinfo("Game Ends!", agent_move_result)
         # print(self.score)    
         # self.root.quit()
+
+        if self.score <= -100:
+            print(self.score)
+            self.quit = True
+            self.root.quit()
         if (self.quit):
             return
-        
         # target 沿求得最短路径前进
         # npos = self.target_path_bfs[self.step]
         # self.target = Target(npos[0], npos[1])
@@ -217,8 +219,11 @@ class Game:
         # NOTE NOTE: You can specify the make_action()'s start and end position,
         #  while start do not need to pass into, 
         #  because python class passes the caller class object itself as the default first parameter
-        target_move_result = self.target.make_action(self.agent,self.agentHome,self.game_coord,self.agent_bullets)
-        
+        if self.score > -50:
+            target_move_result = self.target.make_action(self.agent,self.agentHome,self.game_coord,self.agent_bullets)
+        else:
+            target_move_result = self.target.make_action_less_time_left(self.agent,self.agentHome,self.game_coord,self.target_bullets)
+        # print(target_move_result)
         # check move cause what
         if target_move_result == 'hit agent':
             self.score += 100
@@ -293,5 +298,6 @@ class Game:
 
 if __name__ == "__main__":
     arg1 = int(sys.argv[1])
-    game = Game(50, 30, 15, arg1)
+    arg2 = int(sys.argv[2])
+    game = Game(30, 20, 30, arg1,arg2)
     game.run_auto()
