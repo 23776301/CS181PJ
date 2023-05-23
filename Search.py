@@ -295,7 +295,7 @@ def avoid_red(blue,red,end,game_coord,enemy_bullets):
     blue_to_red = calculate_manhattan_distance(blue,red)
     movements = {'up': (-1, 0), 'down': (1, 0), 'left': (0, -1), 'right': (0, 1)}
     if red_to_end > blue_to_end:
-        return Astar(blue,end,game_coord, enemy_bullets)
+        return Astar(blue,end,game_coord, enemy_bullets)[0]
     else:
         if blue_to_red >=6:
             legal_actions = get_legal_actions(blue,game_coord)
