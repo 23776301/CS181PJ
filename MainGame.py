@@ -305,5 +305,5 @@ class Game:
 if __name__ == "__main__":
     arg1 = int(sys.argv[1])
     arg2 = int(sys.argv[2])
-    game = Game(30, 20, 30, arg1,arg2)
+    game = Game(50, 30, 30, arg1,arg2)
     game.run_auto()

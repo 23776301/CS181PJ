@@ -10,9 +10,9 @@ def collect_score(score, scores):
 def single_thread_with_gui(num_runs,num_cut):
     scores = []
     for count in range(num_runs):            
-        output_score = subprocess.check_output(['python', 'MainGame.py', '1',str(num_cut)]) # set zero to disable gui
+        output_score = subprocess.check_output(['python', 'MainGame.py', '10',str(num_cut)]) # set zero to disable gui
         print(f" {count+1}/{num_runs} jobs finished! score = ",output_score.decode().strip())
-        score = int(output_score.decode().strip())
+        score = float(output_score.decode().strip())
         scores.append(score)
         # print(f" {count+1}/{num_runs} jobs finished!", end="\r")
     average_score = sum(scores) / len(scores)
@@ -23,8 +23,8 @@ def single_thread_with_gui(num_runs,num_cut):
 
 def run_game(num_cut):
     strd = str(num_cut)
-    output_score = subprocess.check_output(['python', 'MainGame.py', '0',strd]) # set zero to disable gui
-    score = int(output_score.decode().strip())
+    output_score = subprocess.check_output(['python', 'MainGame.py', '1',strd]) # set zero to disable gui
+    score = float(output_score.decode().strip())
     # if count == num_runs - 1:
     #     print(f" {count+1}/{num_runs} jobs finished!")
     # else:
@@ -33,7 +33,7 @@ def run_game(num_cut):
     return score
 
 def multi_thread_without_gui(num_runs, num_cut):
-    scores = Parallel(n_jobs = 100)(delayed(run_game)(num_cut) for _ in range(num_runs))
+    scores = Parallel(n_jobs = 8)(delayed(run_game)(num_cut) for _ in range(num_runs))
     # print(scores)
     average_score = sum(scores) / len(scores)
     stv = stdev(scores)
@@ -74,7 +74,7 @@ def multi_plot():
 
     
 if __name__ == '__main__':
-    # single_thread_with_gui(20,20)
+    single_thread_with_gui(20,20)
     multi_plot()
 
 # num_cut = 1, average score = 21.91, standard deviation: = 67.42089940639829
