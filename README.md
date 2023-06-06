@@ -1,5 +1,9 @@
 This is a guide on how to use the project
 # Step 1: Install tkinter for python3
+Tkinter is the standard Python interface for creating graphical user interfaces (GUIs). It provides a way to create windows, dialogs, buttons, textboxes, and other GUI elements in a platform-independent manner. 
+
+Tkinter may be not included with Python installations on some platforms, here are some instructions for
+installing it manually.
 
 ## Windows
 
@@ -54,4 +58,5 @@ $frame\_interval$ means the AI player will perform a step every $frame\_interval
 $step\_cut$ means the AI player will perform $planA$ before $step\_cut$ steps, and then change to $planB$ as the game is coming to an end soon.
 Here our step_limit is set to 250, so set it to 250 we can observe AI's taking $planA$.
 
-# Step 4: Modify the planss of Agent and Target
+# Step 4: Modify the plans of Agent and Target then watch them fighting
+# Step 5: Use CollectScores to collect data and evaluate different algorithms
