@@ -84,4 +84,4 @@ Our framework is well designed and most of the parameters are supported for modi
 For example you can change the game grid size and cell size in `MainGame::__main__()`, change the wall probablility in `MainGame::__init__()`, you can write more actions and return it in `Agent::make_action()` to test your own way, set any cell to *6* to make it the home of agent. Do consider bugs if you change the game state. For any other details, just check our source code and take your modification as you like.
 
 # TODO
-We initially implemented the bullet killing logic but due to time we have to simplify it. Now it's disabled just visually but actually work in backgroud and won't kill the agents. If you are interested just uncomment related parts and enable the canvas drawing for bulles.
+We initially implemented the bullet killing logic but due to time we have to simplify it. Now it's disabled just visually but actually work in backgroud and won't kill the agents. If you are interested just uncomment related parts and enable the canvas drawing for bulles. 
