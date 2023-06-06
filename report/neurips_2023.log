@@ -1,10 +1,10 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022/Debian) (preloaded format=pdflatex 2023.6.5)  7 JUN 2023 03:07
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022/Debian) (preloaded format=pdflatex 2023.6.5)  7 JUN 2023 03:32
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**/home/ubu/Desktop/CS181PJ/report/neurips_2023.tex
-(/home/ubu/Desktop/CS181PJ/report/neurips_2023.tex
+**/home/ubu/CS181PJ/report/neurips_2023.tex
+(/home/ubu/CS181PJ/report/neurips_2023.tex
 LaTeX2e <2022-11-01> patch level 1
 L3 programming layer <2023-01-16> (/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
 Document Class: article 2022/07/02 v1.4n Standard LaTeX document class
@@ -654,14 +654,14 @@ Package rerunfilecheck Info: File `neurips_2023.out' has not changed.
  ) 
 Here is how much of TeX's memory you used:
  12610 strings out of 476091
- 201051 string characters out of 5794082
+ 201027 string characters out of 5794082
  1857330 words of memory out of 5000000
  32687 multiletter control sequences out of 15000+600000
  535317 words of font info for 113 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,8n,76p,1042b,447s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,8n,76p,1034b,447s stack positions out of 10000i,1000n,20000p,200000b,200000s
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}{/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-t1.enc}</usr/share/texmf/fonts/type1/public/cm-super/sftt1000.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb>
-Output written on neurips_2023.pdf (7 pages, 1116635 bytes).
+Output written on neurips_2023.pdf (7 pages, 1117298 bytes).
 PDF statistics:
  101 PDF objects out of 1000 (max. 8388607)
  78 compressed objects within 1 object stream
