@@ -55,21 +55,21 @@ And *Target*, colored in blue, also called *blue* similarly.
 ```shell
 python MainGame.py 1000 250
 ```
-The arguments $(1000, 250)$ passed to MainGame is $(frame\_interval, step\_cut)$ respectively.
+The arguments `(1000, 250)` passed to MainGame is `(frame_interval, step_cut)` respectively.
 
-$frame\_interval$ means the  player will perform a step every $frame\_interval$ milliseconds, which is implemented by tkinter and pass 1000 here helps observe their actions and understand the logic.  
+`frame_interval` means the  player will perform a step every `frame_interval` milliseconds, which is implemented by tkinter and pass 1000 here helps observe their actions and understand the logic.  
 <sub>
-When passing '0' to $frame\_interval$, the game will disable GUI to speed up progress, you can make use of this feature when collecting data and evaluate algorithms. See $Step5$ for more information.</sub>
+When passing `0` to `frame_interval`, the game will disable GUI to speed up progress, you can make use of this feature when collecting data and evaluate algorithms. See $Step5$ for more information.</sub>
 
-$step\_cut$ means the  player will perform $planA$ before $step\_cut$ steps, and then change to $planB$ as the game is coming to an end soon.
+`step_cut` means the  player will perform $planA$ before `step_cut` steps, and then change to $planB$ as the game is coming to an end soon.
 Here our step_limit is set to 250, so set it to 250 we can observe them taking $planA$.
 
 # Step 4: Modify the plans of Agent and Target then watch them fighting
 For better view and clear logic, we implement Agent and Target seperately.  
-Go to *Agent.py* and check **make\_action(self, end, home,game_coord, target_bullets)**，and   
-**make\_action\_less\_time\_left(self, end, home,game_coord, target_bullets)** to understand the logic more clearly.  
-Agent will perform **make\_action()** at first period, aka when *0* ≤ $step\_count$ ≤ $step\_cut$,  
-and then perform **make\_action\_less\_time\_left()** at second period when $step\_cut$ ≤ $step\_count$ ≤ $step\_limit$.
+Go to *Agent.py* and check **make_action(self, end, home,game_coord, target_bullets)**，and   
+**make_action_less_time_left(self, end, home,game_coord, target_bullets)** to understand the logic more clearly.  
+Agent will perform **make_action()** at first period, aka when `0` ≤ `step_count` ≤ `step_cut`,  
+and then perform **make_action_less_time_left()** at second period when `step_cut` ≤ `step_count` ≤ `step_limit`.
 
 Similarly, you can change Target's plan in *Target.py*.
 Then follow $Step3$ to run the *MainGame.py* and you can watch them fighting.
