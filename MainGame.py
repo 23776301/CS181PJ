@@ -191,7 +191,7 @@ class Game:
             else:
                 agent_move_result = self.agent.move(None, self.game_coord)
         else:
-            if self.score > - self.cut:
+            if self.step < self.cut:
                 agent_move_result = self.agent.make_action(self.target,self.agentHome,self.game_coord,self.target_bullets)
             else:
                 agent_move_result = self.agent.make_action_less_time_left(self.target,self.agentHome,self.game_coord,self.target_bullets)
@@ -223,7 +223,7 @@ class Game:
         #  while start do not need to pass into, 
         #  because python class passes the caller class object itself as the default first parameter
 
-        if self.score > 50:
+        if self.step < self.cut:
             target_move_result = self.target.make_action(self.agent,self.agentHome,self.game_coord,self.agent_bullets)
         else:
             target_move_result = self.target.make_action_less_time_left(self.agent,self.agentHome,self.game_coord,self.target_bullets)
